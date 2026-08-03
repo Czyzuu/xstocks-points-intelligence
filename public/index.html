@@ -56,8 +56,9 @@
       <section class="panel leaderboard" id="leaderboard">
         <div class="section-head leaderboard-head"><div><p class="eyebrow">PUBLIC DATASET</p><h2>xPoints leaderboard</h2></div><span>100 ROWS / PAGE</span></div>
         <form id="wallet-search" class="wallet-search">
-          <label for="wallet-input">FIND YOUR WALLET</label>
-          <div><input id="wallet-input" type="search" autocomplete="off" spellcheck="false" placeholder="Enter wallet address or name" /><button type="submit">Search <span>→</span></button></div>
+          <label for="wallet-input">FIND A WALLET BY ADDRESS OR REFERRAL CODE</label>
+          <div><input id="wallet-input" type="search" autocomplete="off" spellcheck="false" maxlength="128" placeholder="Try 1EC8Y490 or paste a wallet address" aria-describedby="wallet-search-help" /><button type="submit">Find wallet <span>→</span></button></div>
+          <small id="wallet-search-help">Enter the code from an xStocks link, with or without <b>ref=</b>.</small>
         </form>
         <div id="wallet-result" class="wallet-result" hidden></div>
         <div class="table-wrap"><table><thead><tr><th>RANK</th><th>WALLET</th><th>NETWORK</th><th>TOP SOURCE</th><th class="right">TODAY</th><th class="right">TOTAL POINTS</th></tr></thead><tbody id="leaderboard-body"></tbody></table></div>

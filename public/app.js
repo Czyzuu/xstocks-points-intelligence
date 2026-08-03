@@ -18,6 +18,18 @@ async function request(url) {
 
 function showError(error) { $("error").textContent = error.message; $("error").hidden = false; }
 
+function normalizeWalletQuery(value) {
+  const query = String(value || "").trim();
+  try {
+    if (/^https?:\/\//i.test(query)) return new URL(query).searchParams.get("ref")?.trim() || query;
+  } catch {}
+  return query.replace(/^ref\s*=\s*/i, "").trim();
+}
+
+function isWalletAddress(value) {
+  return /^0x[a-f0-9]{40}$/i.test(value) || /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
+}
+
 function topSourceEntry(row) {
   return [
     ["Liquidity", row.lpsPoints], ["Lending", row.lendingPoints], ["Holding", row.holdersPoints],
@@ -146,12 +158,15 @@ $("next").addEventListener("click", () => { if (state.page < state.totalPages) {
 
 $("wallet-search").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const query = $("wallet-input").value.trim();
+  const query = normalizeWalletQuery($("wallet-input").value);
   const result = $("wallet-result");
   if (!query) return;
+  const referralLookup = !isWalletAddress(query);
+  const submit = event.currentTarget.querySelector('button[type="submit"]');
+  submit.disabled = true;
   result.hidden = false;
   result.classList.remove("not-found");
-  result.innerHTML = `<span class="search-loading">Looking up wallet…</span>`;
+  result.innerHTML = `<span class="search-loading">${referralLookup ? "Resolving referral code" : "Looking up wallet"}…</span>`;
   try {
     const data = await request(`/api/leaderboard?page=1&search=${encodeURIComponent(query)}`);
     const exact = data.rows.find((wallet) => String(wallet.address).toLowerCase() === query.toLowerCase() || String(wallet.resolvedName || "").toLowerCase() === query.toLowerCase());
@@ -159,13 +174,19 @@ $("wallet-search").addEventListener("submit", async (event) => {
     if (!wallet) throw new Error("Wallet not found");
     const network = wallet.walletType === "Svm" ? "SOL" : wallet.walletType === "Evm" ? "EVM" : wallet.walletType || "—";
     const displayName = wallet.resolvedName || wallet.label || wallet.address;
-    result.innerHTML = `<div class="wallet-identity"><span>WALLET <button type="button" id="close-wallet" aria-label="Close wallet result">×</button></span><b class="wallet" title="${escapeHtml(wallet.address)}">${escapeHtml(displayName)}</b></div><div><span>RANK</span><strong>#${fmt(wallet.rank)}</strong></div><div><span>PERCENTILE</span><strong>${percentileLabel(wallet.rank)}</strong></div><div><span>TOTAL xPOINTS</span><strong>${fmt(wallet.totalPoints)}</strong></div><div><span>NETWORK SHARE</span><strong>${percent.format(Number(wallet.totalPoints) / state.totalPoints)}</strong></div><div class="wallet-share"><span>${escapeHtml(network)} WALLET</span><button type="button" class="share-card-button">Social card <b>↗</b></button></div>${renderPointSources(wallet)}`;
+    const identityLabel = referralLookup ? `REFERRAL ${escapeHtml(query.toUpperCase())} → WALLET` : "WALLET";
+    result.innerHTML = `<div class="wallet-identity"><span>${identityLabel} <button type="button" id="close-wallet" aria-label="Close wallet result">×</button></span><b class="wallet" title="${escapeHtml(wallet.address)}">${escapeHtml(displayName)}</b>${referralLookup ? `<button type="button" class="copy-wallet" data-address="${escapeHtml(wallet.address)}">Copy full address</button>` : ""}</div><div><span>RANK</span><strong>#${fmt(wallet.rank)}</strong></div><div><span>PERCENTILE</span><strong>${percentileLabel(wallet.rank)}</strong></div><div><span>TOTAL xPOINTS</span><strong>${fmt(wallet.totalPoints)}</strong></div><div><span>NETWORK SHARE</span><strong>${percent.format(Number(wallet.totalPoints) / state.totalPoints)}</strong></div><div class="wallet-share"><span>${escapeHtml(network)} WALLET</span><button type="button" class="share-card-button">Social card <b>↗</b></button></div>${renderPointSources(wallet)}`;
     $("close-wallet").addEventListener("click", () => { result.hidden = true; });
     result.querySelector(".share-card-button").addEventListener("click", () => openSocialCard(wallet));
+    result.querySelector(".copy-wallet")?.addEventListener("click", async (copyEvent) => {
+      const button = copyEvent.currentTarget;
+      try { await navigator.clipboard.writeText(button.dataset.address); button.textContent = "Address copied"; }
+      catch { button.textContent = "Copy unavailable"; }
+    });
   } catch (error) {
     result.classList.add("not-found");
-    result.innerHTML = `<span>${escapeHtml(error.message)}</span>`;
-  }
+    result.innerHTML = `<span>${referralLookup ? "No wallet found for that referral code." : escapeHtml(error.message)}</span>`;
+  } finally { submit.disabled = false; }
 });
 
 document.querySelectorAll("[data-close-social]").forEach((button) => button.addEventListener("click", closeSocialCard));

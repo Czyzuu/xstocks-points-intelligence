@@ -69,12 +69,17 @@ select{margin-left:8px;border:1px solid var(--line);background:white;padding:7px
 .wallet-search button{border:0;background:var(--dark);color:white;padding:0 20px;font:500 10px "DM Mono",monospace;text-transform:uppercase;cursor:pointer}
 .wallet-search button:hover{color:var(--green)}
 .wallet-search button span{margin-left:16px}
+.wallet-search>small{display:block;margin-top:9px;color:var(--muted);font:400 9px/1.5 "DM Mono",monospace}
+.wallet-search>small b{font-weight:600;color:var(--ink)}
+.wallet-search button:disabled{cursor:wait;opacity:.65}
 .wallet-result{position:relative;display:grid;grid-template-columns:2fr repeat(4,1fr) 145px;border:1px solid var(--dark);border-top:0;background:var(--green)}
 .wallet-result[hidden]{display:none}
 .wallet-result>div{min-width:0;padding:16px;border-left:1px solid #12231f22}
 .wallet-result>div:first-child{border-left:0}
 .wallet-result>div span{display:block;margin-bottom:10px;font:500 8px "DM Mono",monospace;color:var(--muted)}
 .wallet-result strong,.wallet-result b{display:block;font:600 12px "DM Mono",monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.copy-wallet{align-self:flex-start;margin-top:9px;padding:0;border:0;border-bottom:1px solid currentColor;background:transparent;color:var(--muted);font:500 8px "DM Mono",monospace;text-transform:uppercase;cursor:pointer}
+.copy-wallet:hover{color:var(--green)}
 .wallet-identity>span{display:flex!important;align-items:center;justify-content:space-between}
 #close-wallet{display:grid;place-items:center;width:23px;height:23px;margin:-8px -8px -5px 8px;padding:0;border:1px solid #12231f44;border-radius:50%;background:transparent;color:var(--ink);font:16px/1 Manrope,sans-serif;cursor:pointer}
 #close-wallet:hover{background:var(--dark);color:var(--green);border-color:var(--dark)}
