@@ -2,6 +2,9 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { getPendleAnalytics } from "./api/pendle.js";
+import { getOfficialWallet } from "./api/official-wallet.js";
+import { getVerifiedDownline } from "./api/wallet.js";
 
 const PORT = Number(process.env.PORT || 4173);
 const UPSTREAM = "https://xpoints.io";
@@ -65,6 +68,25 @@ const server = http.createServer(async (req, res) => {
       const params = new URLSearchParams({ page: String(page), pageSize: "100" });
       if (search) params.set("search", search);
       return json(res, 200, await getJson(`/api/leaderboard?${params}`));
+    }
+    if (url.pathname === "/api/wallet") {
+      const address = (url.searchParams.get("address") || "").trim();
+      const isEvm = /^0x[a-f0-9]{40}$/i.test(address);
+      const isSvm = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
+      if (!isEvm && !isSvm) return json(res, 400, { error: "Invalid wallet address" });
+      return json(res, 200, { downline: await getVerifiedDownline(address) });
+    }
+    if (url.pathname === "/api/pendle") {
+      const address = (url.searchParams.get("address") || "").trim();
+      if (!/^0x[a-f0-9]{40}$/i.test(address)) return json(res, 400, { error: "Pendle analytics requires an EVM wallet" });
+      return json(res, 200, await getPendleAnalytics(address));
+    }
+    if (url.pathname === "/api/official-wallet") {
+      const address = (url.searchParams.get("address") || "").trim();
+      const isEvm = /^0x[a-f0-9]{40}$/i.test(address);
+      const isSvm = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
+      if (!isEvm && !isSvm) return json(res, 400, { error: "Invalid wallet address" });
+      return json(res, 200, await getOfficialWallet(address));
     }
     const relative = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
     const safePath = normalize(relative).replace(/^(\.\.(\/|\\|$))+/, "");
