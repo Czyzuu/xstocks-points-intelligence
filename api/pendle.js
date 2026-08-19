@@ -65,6 +65,13 @@ export function summarizeYtHistory(transactions) {
   };
 }
 
+export function calculateYtTotalPnl({ aggregateNetGainUsd, isClosed, historyRealizedPnlUsd, currentYtValueUsd, claimedYieldUsd, unclaimedYieldUsd, entryCostUsd }) {
+  const officialNetGain = Number(aggregateNetGainUsd);
+  if (aggregateNetGainUsd != null && Number.isFinite(officialNetGain)) return officialNetGain + Number(unclaimedYieldUsd || 0);
+  if (isClosed) return Number(historyRealizedPnlUsd || 0);
+  return Number(currentYtValueUsd || 0) + Number(claimedYieldUsd || 0) + Number(unclaimedYieldUsd || 0) - Number(entryCostUsd || 0);
+}
+
 export async function getPendleAnalytics(address) {
   const [pnl, live, transactionHistory] = await Promise.all([
     getPendleJson(`/v1/pnl/gained/${encodeURIComponent(address)}/positions`),
@@ -125,7 +132,16 @@ export async function getPendleAnalytics(address) {
     });
     const unclaimedYieldUsd = unclaimedYield.reduce((sum, item) => sum + item.usd, 0);
     const currentYtValueUsd = Number(livePosition?.yt?.valuation || 0);
-    const ytTotalPnlUsd = isClosed ? historySummary.realizedPnlUsd : currentYtValueUsd + historySummary.claimedYieldUsd + unclaimedYieldUsd - entryCostUsd;
+    const aggregateNetGainUsd = position?.pnl?.netGain?.usd;
+    const ytTotalPnlUsd = calculateYtTotalPnl({
+      aggregateNetGainUsd,
+      isClosed,
+      historyRealizedPnlUsd: historySummary.realizedPnlUsd,
+      currentYtValueUsd,
+      claimedYieldUsd: historySummary.claimedYieldUsd,
+      unclaimedYieldUsd,
+      entryCostUsd
+    });
     return {
       chainId: market.chainId,
       market: market.address,
@@ -136,6 +152,7 @@ export async function getPendleAnalytics(address) {
       closed: isClosed,
       entryCostUsd,
       entryCostAsset,
+      peakCapitalUsd: historySummary.peakCostUsd,
       baseBagAsset: capital.baseAsset,
       baseBagUsd: capital.baseUsd,
       reinvestedBagAsset: capital.reinvestedAsset,
@@ -152,7 +169,7 @@ export async function getPendleAnalytics(address) {
       unclaimedYieldUsd,
       currentYtValueUsd,
       ytTotalPnlUsd,
-      marketNetGainUsd: Number(position?.pnl?.netGain?.usd ?? historySummary.realizedPnlUsd),
+      marketNetGainUsd: Number(aggregateNetGainUsd ?? historySummary.realizedPnlUsd),
       underlyingApy: market?.details?.underlyingApy ?? null,
       impliedApy: market?.details?.impliedApy ?? null
     };

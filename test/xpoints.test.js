@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { normalizePage, normalizeWalletAddress } from "../api/_lib/xpoints.js";
-import { splitYtCapital, summarizeYtHistory } from "../api/pendle.js";
+import { calculateYtTotalPnl, splitYtCapital, summarizeYtHistory } from "../api/pendle.js";
 
 test("normalizePage accepts positive integer-like values", () => {
   assert.equal(normalizePage("7"), 7);
@@ -42,6 +42,19 @@ test("summarizeYtHistory preserves cost and realized PnL for a closed position",
   assert.equal(summary.exitProceedsUsd, 20);
   assert.equal(summary.averageExitAsset, 0.004);
   assert.equal(summary.realizedPnlUsd, -7);
+});
+
+test("official lifetime net gain prevents a reopened YT bag from mixing current cost with lifetime yield", () => {
+  const pnl = calculateYtTotalPnl({
+    aggregateNetGainUsd: -75.28854273166279,
+    isClosed: false,
+    historyRealizedPnlUsd: -75.29,
+    currentYtValueUsd: 7.8029755,
+    claimedYieldUsd: 221.72030586,
+    unclaimedYieldUsd: 0,
+    entryCostUsd: 11.40703732
+  });
+  assert.equal(pnl, -75.28854273166279);
 });
 
 test("normalizePage falls back to the first page", () => {
