@@ -1,4 +1,4 @@
-const state = { page: 1, totalPages: 1, totalPoints: 0, walletCount: 0, socialWallet: null, socialTheme: "dark", socialFormat: "standard" };
+const state = { page: 1, totalPages: 1, totalPoints: 0, walletCount: 0, socialWallet: null, socialTheme: "dark", socialFormat: "standard", socialAnonymous: false };
 const $ = (id) => document.getElementById(id);
 const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 2 });
 const integer = new Intl.NumberFormat("en", { maximumFractionDigits: 0 });
@@ -87,7 +87,9 @@ function renderPendleAnalytics(data) {
     const expiry = position.expiry ? new Date(position.expiry).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "—";
     const entry = position.averageEntryAsset == null ? "—" : Number(position.averageEntryAsset).toPrecision(5);
     const unclaimed = (position.unclaimedYield || []).map((item) => `${Number(item.amount).toPrecision(5)} ${escapeHtml(item.symbol)}`).join(" + ") || "NO CLAIMABLE TOKENS";
-    return `<article><div class="pendle-title"><div><span>YT-${escapeHtml(position.name)}</span><small>MATURITY ${escapeHtml(expiry)} · CHAIN ${fmt(position.chainId)}</small></div><div class="pendle-title-actions"><strong>${fmt(position.balance)} <small>YT · ${currency.format(position.currentYtValueUsd || 0)}</small></strong><button type="button" class="pendle-share-button" data-pendle-index="${index}">Share YT PnL <b>↗</b></button></div></div><dl><div><dt>GROSS YT DEPLOYED</dt><dd>${currency.format(position.entryCostUsd)}</dd><small>BASE ${currency.format(position.baseBagUsd || 0)} · REINVESTED ${currency.format(position.reinvestedBagUsd || 0)}</small></div><div><dt>AVG. DEPLOYED / YT</dt><dd>${escapeHtml(entry)} <small>ASSET</small></dd></div><div><dt>YIELD CLAIMED</dt><dd class="positive">${currency.format(position.claimedYieldUsd)}</dd><small>${fmt(position.yieldClaims)} CLAIMS · ${fmt(position.claimedYieldAsset)} ASSET</small></div><div><dt>YIELD UNCLAIMED</dt><dd class="positive">${currency.format(position.unclaimedYieldUsd || 0)}</dd><small>${unclaimed}</small></div><div><dt>YT TOTAL PNL</dt><dd class="${position.ytTotalPnlUsd >= 0 ? "positive" : "negative"}">${currency.format(position.ytTotalPnlUsd)}</dd><small>MARKED TO CURRENT YT VALUE</small></div><div><dt>UNDERLYING / IMPLIED</dt><dd>${position.underlyingApy == null ? "—" : percent.format(position.underlyingApy)} <small>/ ${position.impliedApy == null ? "—" : percent.format(position.impliedApy)}</small></dd></div></dl></article>`;
+    const exit = position.averageExitAsset == null ? "—" : Number(position.averageExitAsset).toPrecision(5);
+    const yieldOrExit = position.closed ? `<div><dt>EXIT PROCEEDS</dt><dd>${currency.format(position.exitProceedsUsd || 0)}</dd><small>AVG. EXIT ${escapeHtml(exit)} ASSET / YT</small></div>` : `<div><dt>YIELD UNCLAIMED</dt><dd class="positive">${currency.format(position.unclaimedYieldUsd || 0)}</dd><small>${unclaimed}</small></div>`;
+    return `<article><div class="pendle-title"><div><span>YT-${escapeHtml(position.name)}</span><small>MATURITY ${escapeHtml(expiry)} · CHAIN ${fmt(position.chainId)}</small></div><div class="pendle-title-actions"><strong>${position.closed ? "CLOSED" : fmt(position.balance)} <small>${position.closed ? `${fmt(position.soldUnits || 0)} YT SOLD` : `YT · ${currency.format(position.currentYtValueUsd || 0)}`}</small></strong><button type="button" class="pendle-share-button" data-pendle-index="${index}">Share YT PnL <b>↗</b></button></div></div><dl><div><dt>GROSS YT DEPLOYED</dt><dd>${currency.format(position.entryCostUsd)}</dd><small>BASE ${currency.format(position.baseBagUsd || 0)} · REINVESTED ${currency.format(position.reinvestedBagUsd || 0)}</small></div><div><dt>AVG. DEPLOYED / YT</dt><dd>${escapeHtml(entry)} <small>ASSET</small></dd></div><div><dt>YIELD CLAIMED</dt><dd class="positive">${currency.format(position.claimedYieldUsd)}</dd><small>${fmt(position.yieldClaims)} CLAIMS · ${fmt(position.claimedYieldAsset)} ASSET</small></div>${yieldOrExit}<div><dt>YT TOTAL PNL</dt><dd class="${position.ytTotalPnlUsd >= 0 ? "positive" : "negative"}">${currency.format(position.ytTotalPnlUsd)}</dd><small>${position.closed ? "REALIZED AFTER EARLY EXIT + YIELD" : "MARKED TO CURRENT YT VALUE"}</small></div><div><dt>UNDERLYING / IMPLIED</dt><dd>${position.underlyingApy == null ? "—" : percent.format(position.underlyingApy)} <small>/ ${position.impliedApy == null ? "—" : percent.format(position.impliedApy)}</small></dd></div></dl></article>`;
   }).join("")}</div><p class="pendle-note">YT total PnL = current YT value + claimed yield + unclaimed yield − gross YT deployed. Base and reinvested bags are derived from Pendle transaction history; external transfers can make the split incomplete.</p></section>`;
 }
 
@@ -107,15 +109,26 @@ function setSocialCardFormat(format = "standard") {
   syncSocialCardScale();
 }
 
+function setSocialAnonymity(anonymous = false) {
+  state.socialAnonymous = Boolean(anonymous);
+  $("card-anonymous").checked = state.socialAnonymous;
+  document.querySelectorAll(".social-wallet-id").forEach((element) => {
+    element.textContent = state.socialAnonymous ? "ANONYMOUS WALLET" : element.dataset.wallet;
+  });
+}
+
 function openSocialCard(wallet) {
   const source = topSourceEntry(wallet);
   state.socialWallet = wallet;
   state.socialTheme = "dark";
+  state.socialAnonymous = false;
   document.querySelector('input[name="card-theme"][value="dark"]').checked = true;
   $("social-card").dataset.theme = state.socialTheme;
   setSocialCardFormat("standard");
   delete $("social-card").dataset.variant;
-  $("social-card").innerHTML = `<div class="social-card-top"><span class="social-brand"><svg class="xstocks-card-mark" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="card-brand-gradient" x1="0" y1="40" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#1fd59a"/><stop offset="1" stop-color="#5fcef0"/></linearGradient></defs><path fill="url(#card-brand-gradient)" d="M40 .3V13.3L33.3 20 40 26.7V39.7c0 .2-.1.3-.3.3H26.7L20 33.3 13.3 40H.3a.3.3 0 0 1-.3-.3V26.7L6.7 20 0 13.3V.3C0 .1.1 0 .3 0h13L20 6.7 26.7 0h13c.2 0 .3.1.3.3Z"/></svg>xSTOCKS<br />POINTS INTELLIGENCE</span><span>MY xPOINTS STATS<br /><b>${escapeHtml(shortWallet(String(wallet.address)))}</b></span></div><div class="social-rank"><span>LEADERBOARD RANK</span><strong>#${fmt(wallet.rank)}</strong><em>${percentileLabel(wallet.rank)}</em></div><div class="social-stats"><div><span>TOP POINTS SOURCE</span><strong>${escapeHtml(source.label)}</strong><small>${fmt(source.points)} POINTS</small></div><div><span>TOTAL xPOINTS</span><strong>${fmt(wallet.totalPoints)}</strong><small>AVG. MULTIPLIER ${multiplierLabel(wallet)}</small></div></div><div class="social-card-foot"><span>POINTS, RANKED AND DECODED.</span><b>MADE BY CZYZU</b></div>`;
+  const walletLabel = shortWallet(String(wallet.address));
+  $("social-card").innerHTML = `<div class="social-card-top"><span class="social-brand"><svg class="xstocks-card-mark" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="card-brand-gradient" x1="0" y1="40" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#1fd59a"/><stop offset="1" stop-color="#5fcef0"/></linearGradient></defs><path fill="url(#card-brand-gradient)" d="M40 .3V13.3L33.3 20 40 26.7V39.7c0 .2-.1.3-.3.3H26.7L20 33.3 13.3 40H.3a.3.3 0 0 1-.3-.3V26.7L6.7 20 0 13.3V.3C0 .1.1 0 .3 0h13L20 6.7 26.7 0h13c.2 0 .3.1.3.3Z"/></svg>xSTOCKS<br />POINTS INTELLIGENCE</span><span>MY xPOINTS STATS<br /><b class="social-wallet-id" data-wallet="${escapeHtml(walletLabel)}">${escapeHtml(walletLabel)}</b></span></div><div class="social-rank"><span>LEADERBOARD RANK</span><strong>#${fmt(wallet.rank)}</strong><em>${percentileLabel(wallet.rank)}</em></div><div class="social-stats"><div><span>TOP POINTS SOURCE</span><strong>${escapeHtml(source.label)}</strong><small>${fmt(source.points)} POINTS</small></div><div><span>TOTAL xPOINTS</span><strong>${fmt(wallet.totalPoints)}</strong><small>AVG. MULTIPLIER ${multiplierLabel(wallet)}</small></div></div><div class="social-card-foot"><span>POINTS, RANKED AND DECODED.</span><b>MADE BY CZYZU</b></div>`;
+  setSocialAnonymity(false);
   $("copy-status").textContent = "Copy the card as an image and share it anywhere.";
   $("social-card-modal").hidden = false;
   document.body.classList.add("modal-open");
@@ -134,11 +147,14 @@ function openPendleSocialCard(position, wallet) {
   const costPer100k = adjustedPendlePoints ? -Number(position.ytTotalPnlUsd) / adjustedPendlePoints * 100000 : null;
   state.socialWallet = wallet;
   state.socialTheme = "dark";
+  state.socialAnonymous = false;
   document.querySelector('input[name="card-theme"][value="dark"]').checked = true;
   $("social-card").dataset.theme = state.socialTheme;
   setSocialCardFormat("standard");
   $("social-card").dataset.variant = "pendle";
-  $("social-card").innerHTML = `<div class="yt-card-head"><span class="social-brand"><svg class="xstocks-card-mark" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="pendle-card-gradient" x1="0" y1="40" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#1fd59a"/><stop offset="1" stop-color="#5fcef0"/></linearGradient></defs><path fill="url(#pendle-card-gradient)" d="M40 .3V13.3L33.3 20 40 26.7V39.7c0 .2-.1.3-.3.3H26.7L20 33.3 13.3 40H.3a.3.3 0 0 1-.3-.3V26.7L6.7 20 0 13.3V.3C0 .1.1 0 .3 0h13L20 6.7 26.7 0h13c.2 0 .3.1.3.3Z"/></svg>xSTOCKS</span><span>PENDLE POSITION <b>YT-${escapeHtml(position.name)}</b></span></div><div class="yt-card-body"><div class="yt-card-hero ${pnlClass}"><span>TOTAL PNL</span><strong>${position.ytTotalPnlUsd >= 0 ? "+" : ""}${currency.format(position.ytTotalPnlUsd)}</strong><em>${pnlReturn >= 0 ? "+" : ""}${percent.format(pnlReturn)}</em></div><div class="yt-card-efficiency"><div><span>PENDLE YT xPOINTS</span><strong>${pendlePoints ? fmt(pendlePoints) : "—"}</strong><small>AVG. MULTIPLIER ${multiplierLabel(wallet)}</small></div><div><span>NET COST / 100K</span><strong class="${costPer100k != null && costPer100k < 0 ? "profitable" : ""}">${costPer100k == null ? "—" : currency.format(costPer100k)}</strong><small>MULTIPLIER-ADJUSTED xPOINTS</small></div></div></div><div class="yt-card-stats"><div><span>CURRENT VALUE</span><strong>${currency.format(position.currentYtValueUsd || 0)}</strong></div><div><span>YIELD EARNED</span><strong>${currency.format(Number(position.claimedYieldUsd || 0) + Number(position.unclaimedYieldUsd || 0))}</strong></div><div><span>CAPITAL DEPLOYED</span><strong>${currency.format(position.entryCostUsd)}</strong></div></div><div class="yt-card-foot"><span>${escapeHtml(shortWallet(String(wallet.address)))}</span><i></i><span>${fmt(position.balance)} YT</span><b>MADE BY CZYZU</b></div>`;
+  const walletLabel = shortWallet(String(wallet.address));
+  $("social-card").innerHTML = `<div class="yt-card-head"><span class="social-brand"><svg class="xstocks-card-mark" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="pendle-card-gradient" x1="0" y1="40" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#1fd59a"/><stop offset="1" stop-color="#5fcef0"/></linearGradient></defs><path fill="url(#pendle-card-gradient)" d="M40 .3V13.3L33.3 20 40 26.7V39.7c0 .2-.1.3-.3.3H26.7L20 33.3 13.3 40H.3a.3.3 0 0 1-.3-.3V26.7L6.7 20 0 13.3V.3C0 .1.1 0 .3 0h13L20 6.7 26.7 0h13c.2 0 .3.1.3.3Z"/></svg>xSTOCKS</span><span>PENDLE POSITION <b>YT-${escapeHtml(position.name)}</b></span></div><div class="yt-card-body"><div class="yt-card-hero ${pnlClass}"><span>${position.closed ? "REALIZED PNL" : "TOTAL PNL"}</span><strong>${position.ytTotalPnlUsd >= 0 ? "+" : ""}${currency.format(position.ytTotalPnlUsd)}</strong><em>${pnlReturn >= 0 ? "+" : ""}${percent.format(pnlReturn)}</em></div><div class="yt-card-efficiency"><div><span>PENDLE YT xPOINTS</span><strong>${pendlePoints ? fmt(pendlePoints) : "—"}</strong><small>AVG. MULTIPLIER ${multiplierLabel(wallet)}</small></div><div><span>NET COST / 100K</span><strong class="${costPer100k != null && costPer100k < 0 ? "profitable" : ""}">${costPer100k == null ? "—" : currency.format(costPer100k)}</strong><small>MULTIPLIER-ADJUSTED xPOINTS</small></div></div></div><div class="yt-card-stats"><div><span>${position.closed ? "EXIT PROCEEDS" : "CURRENT VALUE"}</span><strong>${currency.format(position.closed ? position.exitProceedsUsd || 0 : position.currentYtValueUsd || 0)}</strong></div><div><span>YIELD EARNED</span><strong>${currency.format(Number(position.claimedYieldUsd || 0) + Number(position.unclaimedYieldUsd || 0))}</strong></div><div><span>CAPITAL DEPLOYED</span><strong>${currency.format(position.entryCostUsd)}</strong></div></div><div class="yt-card-foot"><span class="social-wallet-id" data-wallet="${escapeHtml(walletLabel)}">${escapeHtml(walletLabel)}</span><i></i><span>${position.closed ? `CLOSED · AVG EXIT ${position.averageExitAsset == null ? "—" : Number(position.averageExitAsset).toPrecision(5)}` : `${fmt(position.balance)} YT`}</span><b>MADE BY CZYZU</b></div>`;
+  setSocialAnonymity(false);
   $("copy-status").textContent = "Copy the YT PnL card as an image and share it anywhere.";
   $("social-card-modal").hidden = false;
   document.body.classList.add("modal-open");
@@ -289,6 +305,10 @@ document.querySelectorAll('input[name="card-format"]').forEach((input) => input.
     ? "X two-image post selected — exports at 700 × 800."
     : "16:9 selected — exports at 1200 × 675.";
 }));
+$("card-anonymous").addEventListener("change", (event) => {
+  setSocialAnonymity(event.target.checked);
+  $("copy-status").textContent = state.socialAnonymous ? "Wallet hidden — copied cards will be anonymous." : "Wallet identifier visible.";
+});
 $("copy-social-card").addEventListener("click", copySocialCard);
 document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !$("social-card-modal").hidden) closeSocialCard(); });
 

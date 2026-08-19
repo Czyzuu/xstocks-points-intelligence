@@ -120,6 +120,7 @@ footer{height:90px;border-top:1px solid var(--line);display:flex;align-items:cen
 .social-dialog-head h2{margin:0;font-size:26px;letter-spacing:-.04em}
 .social-close{border:1px solid var(--line);background:transparent;width:36px;height:36px;font-size:20px;cursor:pointer}
 .card-controls{display:flex;justify-content:flex-end;gap:10px;margin:-55px 48px 20px 0}
+.social-dialog[data-format="x-carousel"] .card-controls{flex-wrap:wrap;justify-content:flex-start;margin:0 0 14px}
 .theme-picker{display:flex;justify-content:flex-end;gap:4px;margin:0;padding:0;border:0}
 .theme-picker legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .theme-picker label{cursor:pointer}.theme-picker input{position:absolute;opacity:0;pointer-events:none}

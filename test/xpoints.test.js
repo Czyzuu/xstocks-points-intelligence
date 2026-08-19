@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { normalizePage, normalizeWalletAddress } from "../api/_lib/xpoints.js";
-import { splitYtCapital } from "../api/pendle.js";
+import { splitYtCapital, summarizeYtHistory } from "../api/pendle.js";
 
 test("normalizePage accepts positive integer-like values", () => {
   assert.equal(normalizePage("7"), 7);
@@ -27,6 +27,21 @@ test("splitYtCapital separates fresh capital from claimed yield redeployed into 
   assert.ok(Math.abs(split.baseUsd - 52.2) < 1e-9);
   assert.ok(Math.abs(split.reinvestedAsset - 0.1) < 1e-9);
   assert.ok(Math.abs(split.reinvestedUsd - 11) < 1e-9);
+});
+
+test("summarizeYtHistory preserves cost and realized PnL for a closed position", () => {
+  const summary = summarizeYtHistory([
+    { timestamp: "2026-06-01", action: "buyYt", profit: { usd: 0 }, ytData: { unit: 50, spent_v2: { usd: 140, asset: 1.5 } } },
+    { timestamp: "2026-07-01", action: "redeemYtYield", profit: { usd: 110, asset: 1.1 }, ytData: { unit: 50, spent_v2: { usd: 140, asset: 1.5 } } },
+    { timestamp: "2026-08-01", action: "sellYt", profit: { usd: -117 }, txValueAsset: 0.2, assetUsd: 100, ytData: { unit: 0, spent_v2: { usd: 0, asset: 0 } } }
+  ]);
+  assert.equal(summary.balance, 0);
+  assert.equal(summary.peakUnits, 50);
+  assert.equal(summary.peakCostUsd, 140);
+  assert.equal(summary.claimedYieldUsd, 110);
+  assert.equal(summary.exitProceedsUsd, 20);
+  assert.equal(summary.averageExitAsset, 0.004);
+  assert.equal(summary.realizedPnlUsd, -7);
 });
 
 test("normalizePage falls back to the first page", () => {
