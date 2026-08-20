@@ -67,9 +67,11 @@ export function summarizeYtHistory(transactions) {
 
 export function calculateYtTotalPnl({ aggregateNetGainUsd, isClosed, historyRealizedPnlUsd, currentYtValueUsd, claimedYieldUsd, unclaimedYieldUsd, entryCostUsd }) {
   const officialNetGain = Number(aggregateNetGainUsd);
-  if (aggregateNetGainUsd != null && Number.isFinite(officialNetGain)) return officialNetGain + Number(unclaimedYieldUsd || 0);
-  if (isClosed) return Number(historyRealizedPnlUsd || 0);
-  return Number(currentYtValueUsd || 0) + Number(claimedYieldUsd || 0) + Number(unclaimedYieldUsd || 0) - Number(entryCostUsd || 0);
+  const realizedPnl = aggregateNetGainUsd != null && Number.isFinite(officialNetGain)
+    ? officialNetGain
+    : Number(historyRealizedPnlUsd || claimedYieldUsd || 0);
+  if (isClosed) return realizedPnl;
+  return realizedPnl + Number(currentYtValueUsd || 0) + Number(unclaimedYieldUsd || 0) - Number(entryCostUsd || 0);
 }
 
 export async function getPendleAnalytics(address) {

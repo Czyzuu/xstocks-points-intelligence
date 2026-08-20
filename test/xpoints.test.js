@@ -44,7 +44,7 @@ test("summarizeYtHistory preserves cost and realized PnL for a closed position",
   assert.equal(summary.realizedPnlUsd, -7);
 });
 
-test("official lifetime net gain prevents a reopened YT bag from mixing current cost with lifetime yield", () => {
+test("official realized net gain is combined with the reopened YT bag's unrealized PnL", () => {
   const pnl = calculateYtTotalPnl({
     aggregateNetGainUsd: -75.28854273166279,
     isClosed: false,
@@ -54,7 +54,20 @@ test("official lifetime net gain prevents a reopened YT bag from mixing current 
     unclaimedYieldUsd: 0,
     entryCostUsd: 11.40703732
   });
-  assert.equal(pnl, -75.28854273166279);
+  assert.ok(Math.abs(pnl - (-78.89260455166279)) < 1e-9);
+});
+
+test("open YT PnL includes its marked price loss and unclaimed yield", () => {
+  const pnl = calculateYtTotalPnl({
+    aggregateNetGainUsd: 13.960143616784674,
+    isClosed: false,
+    historyRealizedPnlUsd: 13.960143616784674,
+    currentYtValueUsd: 12.195274227493032,
+    claimedYieldUsd: 13.960143616784674,
+    unclaimedYieldUsd: 18.832555170906165,
+    entryCostUsd: 67.02698497062788
+  });
+  assert.ok(Math.abs(pnl - (-22.039011955444008)) < 1e-9);
 });
 
 test("normalizePage falls back to the first page", () => {
