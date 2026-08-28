@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { normalizePage, normalizeWalletAddress } from "../api/_lib/xpoints.js";
-import { calculateYtTotalPnl, splitYtCapital, summarizeYtHistory } from "../api/pendle.js";
+import { calculateYtTotalPnl, collectCandidateMarketKeys, marketIsMatured, splitYtCapital, summarizeYtHistory } from "../api/pendle.js";
 
 test("normalizePage accepts positive integer-like values", () => {
   assert.equal(normalizePage("7"), 7);
@@ -68,6 +68,29 @@ test("open YT PnL includes its marked price loss and unclaimed yield", () => {
     entryCostUsd: 67.02698497062788
   });
   assert.ok(Math.abs(pnl - (-22.039011955444008)) < 1e-9);
+});
+
+test("new live YT markets are tracked before PnL and transaction indexing catches up", () => {
+  const keys = collectCandidateMarketKeys([], [{ chainId: 1, openPositions: [{ marketId: "1-0xNEW", yt: { valuation: 12 } }] }], new Map());
+  assert.deepEqual([...keys], ["1-0xnew"]);
+});
+
+test("matured markets are recognized even when an aggregate YT balance remains", () => {
+  assert.equal(marketIsMatured("2026-08-27T00:00:00.000Z", Date.parse("2026-08-27T01:00:00.000Z")), true);
+  assert.equal(marketIsMatured("2026-11-26T00:00:00.000Z", Date.parse("2026-08-27T01:00:00.000Z")), false);
+});
+
+test("matured YT PnL subtracts acquisition cost because there is no exit trade", () => {
+  const pnl = calculateYtTotalPnl({
+    aggregateNetGainUsd: 32.940205266603954,
+    isClosed: true,
+    isMatured: true,
+    historyRealizedPnlUsd: 32.940205266603954,
+    currentYtValueUsd: 0,
+    unclaimedYieldUsd: 0,
+    entryCostUsd: 67.02698497062788
+  });
+  assert.ok(Math.abs(pnl - (-34.086779704023925)) < 1e-9);
 });
 
 test("normalizePage falls back to the first page", () => {

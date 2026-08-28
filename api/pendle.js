@@ -4,6 +4,19 @@ const hasYtActivity = (position) => Number(position.ytData?.unit || 0) !== 0 || 
 const YT_ACTIONS = new Set(["buyYt", "sellYt", "transferYtIn", "transferYtOut", "redeemYtYield"]);
 const positionKey = ({ chainId, market }) => `${chainId}-${String(market).toLowerCase()}`;
 
+export function collectCandidateMarketKeys(pnlPositions, livePositions, transactionsByMarket) {
+  return new Set([
+    ...(pnlPositions || []).filter(hasYtActivity).map(positionKey),
+    ...(livePositions || []).flatMap((chain) => (chain.openPositions || []).filter((position) => position.yt).map((position) => String(position.marketId).toLowerCase())),
+    ...transactionsByMarket.keys()
+  ]);
+}
+
+export function marketIsMatured(expiry, now = Date.now()) {
+  const maturity = Date.parse(expiry || "");
+  return Number.isFinite(maturity) && maturity <= now;
+}
+
 export function splitYtCapital(transactions) {
   const ordered = [...transactions].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
   let previousSpentAsset = 0;
@@ -65,11 +78,12 @@ export function summarizeYtHistory(transactions) {
   };
 }
 
-export function calculateYtTotalPnl({ aggregateNetGainUsd, isClosed, historyRealizedPnlUsd, currentYtValueUsd, claimedYieldUsd, unclaimedYieldUsd, entryCostUsd }) {
+export function calculateYtTotalPnl({ aggregateNetGainUsd, isClosed, isMatured = false, historyRealizedPnlUsd, currentYtValueUsd, claimedYieldUsd, unclaimedYieldUsd, entryCostUsd }) {
   const officialNetGain = Number(aggregateNetGainUsd);
   const realizedPnl = aggregateNetGainUsd != null && Number.isFinite(officialNetGain)
     ? officialNetGain
     : Number(historyRealizedPnlUsd || claimedYieldUsd || 0);
+  if (isMatured) return realizedPnl + Number(unclaimedYieldUsd || 0) - Number(entryCostUsd || 0);
   if (isClosed) return realizedPnl;
   return realizedPnl + Number(currentYtValueUsd || 0) + Number(unclaimedYieldUsd || 0) - Number(entryCostUsd || 0);
 }
@@ -88,10 +102,8 @@ export async function getPendleAnalytics(address) {
     if (!transactionsByMarket.has(key)) transactionsByMarket.set(key, []);
     transactionsByMarket.get(key).push(transaction);
   }
-  const candidateKeys = new Set([
-    ...(pnl.positions || []).filter(hasYtActivity).map(positionKey),
-    ...transactionsByMarket.keys()
-  ]);
+  const liveByMarket = new Map((live.positions || []).flatMap((chain) => (chain.openPositions || []).map((position) => [position.marketId.toLowerCase(), position])));
+  const candidateKeys = collectCandidateMarketKeys(pnl.positions, live.positions, transactionsByMarket);
   if (!candidateKeys.size) return { positions: [] };
 
   const ids = [...candidateKeys].join(",");
@@ -101,11 +113,14 @@ export async function getPendleAnalytics(address) {
     const market = marketById.get(key);
     return String(market?.protocol || "").toLowerCase() === "xstocks" || (market?.points || []).some(({ key }) => String(key).toLowerCase() === "xstocks");
   }).sort((a, b) => {
+    const liveDifference = Number(liveByMarket.has(b)) - Number(liveByMarket.has(a));
+    if (liveDifference) return liveDifference;
+    const expiryDifference = Date.parse(marketById.get(b)?.expiry || 0) - Date.parse(marketById.get(a)?.expiry || 0);
+    if (expiryDifference) return expiryDifference;
     const latest = (key) => new Date(summarizeYtHistory(transactionsByMarket.get(key) || []).latestTimestamp || 0);
     return latest(b) - latest(a);
   }).slice(0, 10);
   if (!xStocksKeys.length) return { positions: [] };
-  const liveByMarket = new Map((live.positions || []).flatMap((chain) => (chain.openPositions || []).map((position) => [position.marketId.toLowerCase(), position])));
   const claimTokenIds = [...new Set(xStocksKeys.flatMap((key) => liveByMarket.get(key)?.yt?.claimTokenAmounts || []).map(({ token }) => token))];
   const [claimAssets, claimPrices] = claimTokenIds.length ? await Promise.all([
     getPendleJson(`/v1/assets/all?ids=${encodeURIComponent(claimTokenIds.join(","))}`),
@@ -122,7 +137,8 @@ export async function getPendleAnalytics(address) {
     const livePosition = liveByMarket.get(key);
     const aggregateBalance = Number(position?.ytData?.unit || 0);
     const balance = livePosition || aggregateBalance > 0 ? aggregateBalance || historySummary.balance : 0;
-    const isClosed = !livePosition && balance <= 1e-12;
+    const matured = marketIsMatured(market?.expiry);
+    const isClosed = matured || (!livePosition && balance <= 1e-12);
     const aggregateCost = position?.ytData?.spent_v2 || {};
     const entryCostUsd = isClosed ? historySummary.peakCostUsd : Number(aggregateCost.usd || historySummary.peakCostUsd);
     const entryCostAsset = isClosed ? historySummary.peakCostAsset : Number(aggregateCost.asset || historySummary.peakCostAsset);
@@ -138,6 +154,7 @@ export async function getPendleAnalytics(address) {
     const ytTotalPnlUsd = calculateYtTotalPnl({
       aggregateNetGainUsd,
       isClosed,
+      isMatured: matured,
       historyRealizedPnlUsd: historySummary.realizedPnlUsd,
       currentYtValueUsd,
       claimedYieldUsd: historySummary.claimedYieldUsd,
@@ -152,6 +169,7 @@ export async function getPendleAnalytics(address) {
       expiry: market?.expiry || null,
       balance,
       closed: isClosed,
+      matured,
       entryCostUsd,
       entryCostAsset,
       peakCapitalUsd: historySummary.peakCostUsd,
