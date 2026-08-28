@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { getPendleAnalytics } from "./api/pendle.js";
+import { getExponentAnalytics } from "./api/exponent.js";
 import { getOfficialWallet } from "./api/official-wallet.js";
 import { getVerifiedDownline } from "./api/wallet.js";
 
@@ -80,6 +81,11 @@ const server = http.createServer(async (req, res) => {
       const address = (url.searchParams.get("address") || "").trim();
       if (!/^0x[a-f0-9]{40}$/i.test(address)) return json(res, 400, { error: "Pendle analytics requires an EVM wallet" });
       return json(res, 200, await getPendleAnalytics(address));
+    }
+    if (url.pathname === "/api/exponent") {
+      const address = (url.searchParams.get("address") || "").trim();
+      if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) return json(res, 400, { error: "Exponent analytics requires a Solana wallet" });
+      return json(res, 200, await getExponentAnalytics(address));
     }
     if (url.pathname === "/api/official-wallet") {
       const address = (url.searchParams.get("address") || "").trim();

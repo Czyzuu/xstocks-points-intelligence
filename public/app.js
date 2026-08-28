@@ -95,6 +95,16 @@ function renderPendleAnalytics(data) {
   }).join("")}</div><p class="pendle-note">YT total PnL combines Pendle's realized lifetime net gain with the open bag's current value, cost basis, and unclaimed yield. Base and reinvested history can be incomplete after external transfers.</p></section>`;
 }
 
+function renderExponentAnalytics(data) {
+  const positions = data?.positions || [];
+  if (!positions.length) return "";
+  return `<section class="pendle-analytics exponent-analytics"><h3>EXPONENT YT ANALYTICS <span>OFFICIAL EXPONENT DATA · SOLANA</span></h3><div class="pendle-list">${positions.map((position, index) => {
+    const expiry = new Date(position.expiry).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
+    const usdOrAsset = (usd, asset) => usd == null ? `${fmt(asset)} STRCx` : currency.format(usd);
+    return `<article><div class="pendle-title"><div><span>YT-${escapeHtml(position.name)} · EXPONENT</span><small>MATURITY ${escapeHtml(expiry)} · ${fmt(position.trades)} TRADES</small></div><div class="pendle-title-actions"><strong>${fmt(position.unitsHeld)} <small>YT · ${usdOrAsset(position.currentValueUsd, position.currentValueAsset)}</small></strong><button type="button" class="pendle-share-button exponent-share-button" data-exponent-index="${index}">Share YT PnL <b>↗</b></button></div></div><dl><div><dt>CURRENT COST BASIS</dt><dd>${usdOrAsset(position.costBasisUsd, position.costBasisAsset)}</dd><small>${fmt(position.costBasisAsset)} STRCx</small></div><div><dt>YT MARKET PRICE</dt><dd>${fmt(position.ytPriceAsset)} <small>STRCx</small></dd></div><div><dt>YIELD CLAIMED</dt><dd class="positive">${position.yieldIndexed ? usdOrAsset(position.claimedYieldUsd, position.claimedYieldAsset) : "FEED UNAVAILABLE"}</dd><small>${position.yieldIndexed ? `${fmt(position.claimedYieldAsset)} STRCx` : "NOT COUNTED IN TOTAL PNL"}</small></div><div><dt>REALIZED PNL</dt><dd class="${position.realizedPnlAsset >= 0 ? "positive" : "negative"}">${usdOrAsset(position.realizedPnlUsd, position.realizedPnlAsset)}</dd><small>AVERAGE-COST EXITS</small></div><div><dt>YT TOTAL PNL</dt><dd class="${position.totalPnlAsset >= 0 ? "positive" : "negative"}">${usdOrAsset(position.totalPnlUsd, position.totalPnlAsset)}</dd><small>${fmt(position.totalPnlAsset)} STRCx · ${position.yieldIndexed ? "INCLUDING CLAIMS" : "CLAIMS EXCLUDED"}</small></div><div><dt>UNDERLYING / IMPLIED</dt><dd>${position.underlyingApy == null ? "—" : percent.format(position.underlyingApy)} <small>/ ${position.impliedApy == null ? "—" : percent.format(position.impliedApy)}</small></dd></div></dl></article>`;
+  }).join("")}</div><p class="pendle-note">PnL uses Exponent-indexed YT buys, sells, and claimed STRCx yield. USD values translate the STRCx-denominated result at the current liquid-market price.</p></section>`;
+}
+
 function syncSocialCardScale() {
   const frame = $("social-card-frame");
   const width = frame.getBoundingClientRect().width;
@@ -159,6 +169,34 @@ function openPendleSocialCard(position, wallet) {
   $("social-card").innerHTML = `<div class="yt-card-head"><span class="social-brand"><svg class="xstocks-card-mark" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="pendle-card-gradient" x1="0" y1="40" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#1fd59a"/><stop offset="1" stop-color="#5fcef0"/></linearGradient></defs><path fill="url(#pendle-card-gradient)" d="M40 .3V13.3L33.3 20 40 26.7V39.7c0 .2-.1.3-.3.3H26.7L20 33.3 13.3 40H.3a.3.3 0 0 1-.3-.3V26.7L6.7 20 0 13.3V.3C0 .1.1 0 .3 0h13L20 6.7 26.7 0h13c.2 0 .3.1.3.3Z"/></svg>xSTOCKS</span><span>PENDLE POSITION <b>YT-${escapeHtml(position.name)}</b></span></div><div class="yt-card-body"><div class="yt-card-hero ${pnlClass}"><span>${position.closed ? "REALIZED PNL" : "TOTAL PNL"}</span><strong>${position.ytTotalPnlUsd >= 0 ? "+" : ""}${currency.format(position.ytTotalPnlUsd)}</strong><em>${pnlReturn >= 0 ? "+" : ""}${percent.format(pnlReturn)}</em></div><div class="yt-card-efficiency"><div><span>PENDLE YT xPOINTS</span><strong>${pendlePoints ? fmt(pendlePoints) : "—"}</strong><small>AVG. MULTIPLIER ${multiplierLabel(wallet)}</small></div><div><span>NET COST / 100K</span><strong class="${costPer100k != null && costPer100k < 0 ? "profitable" : ""}">${costPer100k == null ? "—" : currency.format(costPer100k)}</strong><small>MULTIPLIER-ADJUSTED xPOINTS</small></div></div></div><div class="yt-card-stats"><div><span>${position.closed ? "EXIT PROCEEDS" : "CURRENT VALUE"}</span><strong>${currency.format(position.closed ? position.exitProceedsUsd || 0 : position.currentYtValueUsd || 0)}</strong></div><div><span>YIELD EARNED</span><strong>${currency.format(Number(position.claimedYieldUsd || 0) + Number(position.unclaimedYieldUsd || 0))}</strong></div><div><span>PEAK CAPITAL</span><strong>${currency.format(returnCapital)}</strong></div></div><div class="yt-card-foot"><span class="social-wallet-id" data-wallet="${escapeHtml(walletLabel)}">${escapeHtml(walletLabel)}</span><i></i><span>${position.closed ? `CLOSED · AVG EXIT ${position.averageExitAsset == null ? "—" : Number(position.averageExitAsset).toPrecision(5)}` : `${fmt(position.balance)} YT`}</span><b>MADE BY CZYZU</b></div>`;
   setSocialAnonymity(false);
   $("copy-status").textContent = "Copy the YT PnL card as an image and share it anywhere.";
+  $("social-card-modal").hidden = false;
+  document.body.classList.add("modal-open");
+  syncSocialCardScale();
+  $("copy-social-card").focus();
+}
+
+function openExponentSocialCard(position, wallet) {
+  const pnlUsd = Number(position.totalPnlUsd || 0);
+  const deployedUsd = Number(position.lifetimeSpentAsset || 0) * Number(position.assetUsd || 0) || Number(position.costBasisUsd || 0);
+  const pnlReturn = deployedUsd ? pnlUsd / deployedUsd : 0;
+  const pnlClass = pnlUsd >= 0 ? "gain" : "loss";
+  const exponentPoints = Number((wallet.sources || []).find((source) => /exponent/i.test(source.label || source.marketSource || ""))?.value || 0);
+  const averageMultiplier = wallet.averageMultiplier == null
+    ? (Number(wallet.totalBasePoints) > 0 ? Number(wallet.totalPoints) / Number(wallet.totalBasePoints) : null)
+    : Number(wallet.averageMultiplier);
+  const adjustedPoints = exponentPoints && Number.isFinite(averageMultiplier) ? exponentPoints * averageMultiplier : 0;
+  const costPer100k = adjustedPoints ? -pnlUsd / adjustedPoints * 100000 : null;
+  state.socialWallet = wallet;
+  state.socialTheme = "dark";
+  state.socialAnonymous = false;
+  document.querySelector('input[name="card-theme"][value="dark"]').checked = true;
+  $("social-card").dataset.theme = state.socialTheme;
+  setSocialCardFormat("standard");
+  $("social-card").dataset.variant = "exponent";
+  const walletLabel = shortWallet(String(wallet.address));
+  $("social-card").innerHTML = `<div class="yt-card-head"><span class="social-brand"><svg class="xstocks-card-mark" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="exponent-card-gradient" x1="0" y1="40" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#b8f34a"/><stop offset="1" stop-color="#6fe7a8"/></linearGradient></defs><path fill="url(#exponent-card-gradient)" d="M40 .3V13.3L33.3 20 40 26.7V39.7c0 .2-.1.3-.3.3H26.7L20 33.3 13.3 40H.3a.3.3 0 0 1-.3-.3V26.7L6.7 20 0 13.3V.3C0 .1.1 0 .3 0h13L20 6.7 26.7 0h13c.2 0 .3.1.3.3Z"/></svg>xSTOCKS</span><span>EXPONENT POSITION <b>YT-${escapeHtml(position.name)}</b></span></div><div class="yt-card-body"><div class="yt-card-hero ${pnlClass}"><span>TOTAL PNL</span><strong>${pnlUsd >= 0 ? "+" : ""}${currency.format(pnlUsd)}</strong><em>${pnlReturn >= 0 ? "+" : ""}${percent.format(pnlReturn)}</em></div><div class="yt-card-efficiency"><div><span>EXPONENT YT xPOINTS</span><strong>${exponentPoints ? fmt(exponentPoints) : "—"}</strong><small>AVG. MULTIPLIER ${multiplierLabel(wallet)}</small></div><div><span>NET COST / 100K</span><strong class="${costPer100k != null && costPer100k < 0 ? "profitable" : ""}">${costPer100k == null ? "—" : currency.format(costPer100k)}</strong><small>MULTIPLIER-ADJUSTED xPOINTS</small></div></div></div><div class="yt-card-stats"><div><span>CURRENT VALUE</span><strong>${currency.format(position.currentValueUsd || 0)}</strong></div><div><span>YIELD EARNED</span><strong>${position.yieldIndexed ? currency.format(position.claimedYieldUsd || 0) : "—"}</strong></div><div><span>CAPITAL DEPLOYED</span><strong>${currency.format(deployedUsd)}</strong></div></div><div class="yt-card-foot"><span class="social-wallet-id" data-wallet="${escapeHtml(walletLabel)}">${escapeHtml(walletLabel)}</span><i></i><span>${fmt(position.unitsHeld)} YT · SOLANA</span><b>MADE BY CZYZU</b></div>`;
+  setSocialAnonymity(false);
+  $("copy-status").textContent = "Copy the Exponent YT PnL card as an image and share it anywhere.";
   $("social-card-modal").hidden = false;
   document.body.classList.add("modal-open");
   syncSocialCardScale();
@@ -280,8 +318,11 @@ $("wallet-search").addEventListener("submit", async (event) => {
     const displayName = wallet.resolvedName || wallet.label || wallet.address;
     const identityLabel = referralLookup ? `REFERRAL ${escapeHtml(query.toUpperCase())} → WALLET` : "WALLET";
     const hasPendleYt = wallet.walletType === "Evm" && wallet.sources.some((source) => /pendle[ -]?yt/i.test(source.label || source.marketSource || ""));
-    const pendle = hasPendleYt ? await request(`/api/pendle?address=${encodeURIComponent(wallet.address)}`).catch(() => null) : null;
-    result.innerHTML = `<div class="wallet-identity"><span>${identityLabel} <button type="button" id="close-wallet" aria-label="Close wallet result">×</button></span><b class="wallet" title="${escapeHtml(wallet.address)}">${escapeHtml(displayName)}</b>${referralLookup ? `<button type="button" class="copy-wallet" data-address="${escapeHtml(wallet.address)}">Copy full address</button>` : ""}</div><div><span>RANK</span><strong>${rankLabel(wallet.rank)}</strong></div><div><span>PERCENTILE</span><strong>${percentileLabel(wallet.rank)}</strong></div><div><span>TOTAL xPOINTS</span><strong>${fmt(wallet.totalPoints)}</strong></div><div><span>BASE xPOINTS</span><strong>${fmt(wallet.totalBasePoints)}</strong></div><div><span>AVG. MULTIPLIER</span><strong>${multiplierLabel(wallet)}</strong></div><div class="wallet-share"><span>${escapeHtml(network)} · OFFICIAL #${fmt(wallet.snapshotNumber)}</span><button type="button" class="share-card-button">Social card <b>↗</b></button></div>${renderPointSources(wallet)}${pendle ? renderPendleAnalytics(pendle) : ""}${renderReferredWallets(details.downline, wallet.referralCount)}`;
+    const [pendle, exponent] = await Promise.all([
+      hasPendleYt ? request(`/api/pendle?address=${encodeURIComponent(wallet.address)}`).catch(() => null) : null,
+      wallet.walletType === "Svm" ? request(`/api/exponent?address=${encodeURIComponent(wallet.address)}`).catch(() => null) : null
+    ]);
+    result.innerHTML = `<div class="wallet-identity"><span>${identityLabel} <button type="button" id="close-wallet" aria-label="Close wallet result">×</button></span><b class="wallet" title="${escapeHtml(wallet.address)}">${escapeHtml(displayName)}</b>${referralLookup ? `<button type="button" class="copy-wallet" data-address="${escapeHtml(wallet.address)}">Copy full address</button>` : ""}</div><div><span>RANK</span><strong>${rankLabel(wallet.rank)}</strong></div><div><span>PERCENTILE</span><strong>${percentileLabel(wallet.rank)}</strong></div><div><span>TOTAL xPOINTS</span><strong>${fmt(wallet.totalPoints)}</strong></div><div><span>BASE xPOINTS</span><strong>${fmt(wallet.totalBasePoints)}</strong></div><div><span>AVG. MULTIPLIER</span><strong>${multiplierLabel(wallet)}</strong></div><div class="wallet-share"><span>${escapeHtml(network)} · OFFICIAL #${fmt(wallet.snapshotNumber)}</span><button type="button" class="share-card-button">Social card <b>↗</b></button></div>${renderPointSources(wallet)}${pendle ? renderPendleAnalytics(pendle) : ""}${renderExponentAnalytics(exponent)}${renderReferredWallets(details.downline, wallet.referralCount)}`;
     $("close-wallet").addEventListener("click", () => { result.hidden = true; });
     result.querySelector(".share-card-button").addEventListener("click", () => openSocialCard(wallet));
     result.querySelector(".copy-wallet")?.addEventListener("click", async (copyEvent) => {
@@ -293,8 +334,11 @@ $("wallet-search").addEventListener("submit", async (event) => {
       try { await navigator.clipboard.writeText(button.dataset.address); button.textContent = "Address copied"; }
       catch { button.textContent = "Copy unavailable"; }
     }));
-    result.querySelectorAll(".pendle-share-button").forEach((button) => button.addEventListener("click", () => {
+    result.querySelectorAll(".pendle-share-button:not(.exponent-share-button)").forEach((button) => button.addEventListener("click", () => {
       openPendleSocialCard(pendle.positions[Number(button.dataset.pendleIndex)], wallet);
+    }));
+    result.querySelectorAll(".exponent-share-button").forEach((button) => button.addEventListener("click", () => {
+      openExponentSocialCard(exponent.positions[Number(button.dataset.exponentIndex)], wallet);
     }));
   } catch (error) {
     result.classList.add("not-found");

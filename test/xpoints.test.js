@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { normalizePage, normalizeWalletAddress } from "../api/_lib/xpoints.js";
 import { calculateYtTotalPnl, collectCandidateMarketKeys, marketIsMatured, splitYtCapital, summarizeYtHistory } from "../api/pendle.js";
+import { calculateExponentPnl, normalizeExponentTrades } from "../api/exponent.js";
 
 test("normalizePage accepts positive integer-like values", () => {
   assert.equal(normalizePage("7"), 7);
@@ -97,4 +98,21 @@ test("normalizePage falls back to the first page", () => {
   for (const value of [undefined, null, "", "nope", "0", "-4"]) {
     assert.equal(normalizePage(value), 1);
   }
+});
+
+test("Exponent YT trades are normalized from raw token amounts", () => {
+  const trades = normalizeExponentTrades([{ vault_address: "vault", trade_ts: "2026-08-01", is_buy: true, in_amount: "625000000", out_amount: "10000000000", price: "0.0625" }], { vaultAddress: "vault", decimals: 8 });
+  assert.deepEqual(trades.map(({ type, ytAmount, assetAmount }) => ({ type, ytAmount, assetAmount })), [{ type: "buy", ytAmount: 100, assetAmount: 6.25 }]);
+});
+
+test("Exponent PnL retains proportional cost basis after a partial sale", () => {
+  const pnl = calculateExponentPnl([
+    { type: "buy", ytAmount: 100, assetAmount: 6 },
+    { type: "buy", ytAmount: 100, assetAmount: 8 },
+    { type: "sell", ytAmount: 50, assetAmount: 4 }
+  ], 1, 0.08);
+  assert.equal(pnl.unitsHeld, 150);
+  assert.equal(pnl.costBasisAsset, 10.5);
+  assert.equal(pnl.realizedPnlAsset, 0.5);
+  assert.equal(pnl.totalPnlAsset, 3);
 });

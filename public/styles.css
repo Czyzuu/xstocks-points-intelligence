@@ -331,6 +331,8 @@ footer>span:last-child{order:2}
 .pendle-list dd small,.pendle-list dl>div>small{color:var(--muted);font:400 8px "Geist Mono",monospace}
 .pendle-list .positive{color:var(--green)}.pendle-list .negative{color:var(--orange)}
 .pendle-note{margin:14px 0 0!important;font:400 9px/1.5 "Geist Mono",monospace}
+.exponent-analytics{background:linear-gradient(135deg,#191d20,#202519);border-top-color:#b8f34a!important}
+.exponent-analytics>h3{color:#d8ff82}.exponent-analytics .pendle-list article{border-color:#424b32}
 .yt-card-head{display:flex;align-items:center;justify-content:space-between}
 .yt-card-head>span:last-child{color:var(--muted);font:500 11px "Geist Mono",monospace;text-align:right;letter-spacing:.08em}
 .yt-card-head>span:last-child b{display:block;margin-top:5px;color:#fff;font-size:16px;letter-spacing:0}
@@ -368,6 +370,10 @@ footer>span:last-child{order:2}
 .social-card[data-theme="light"][data-variant="pendle"] .yt-card-efficiency>div{border-color:#07745152;background:linear-gradient(120deg,#0b8f6414,#209bb00d)}
 .social-card[data-theme="light"][data-variant="pendle"] .yt-card-stats>div{border-color:#181a1d2b;background:#ffffffa8;box-shadow:0 3px 10px #181a1d0a}
 .social-card[data-theme="light"][data-variant="pendle"] .yt-card-efficiency strong,.social-card[data-theme="light"][data-variant="pendle"] .yt-card-stats strong{color:#181a1d}
+.social-card[data-variant="exponent"]::before{background:radial-gradient(circle at 75% 20%,#b8f34a38,transparent 42%),linear-gradient(145deg,#182016,#121516)}
+.social-card[data-variant="exponent"] .yt-card-efficiency>div{border-color:#b8f34a45;background:linear-gradient(120deg,#b8f34a13,#6fe7a80b)}
+.social-card[data-theme="light"][data-variant="exponent"]::before{opacity:.12}
+.social-card[data-theme="light"][data-variant="exponent"] .yt-card-efficiency>div{border-color:#75a82055;background:linear-gradient(120deg,#b8f34a1c,#6fe7a80f)}
 @media(max-width:1050px){.source-list{grid-template-columns:1fr}}
 @media(max-width:1050px){.referred-wallets ol{grid-template-columns:1fr}}
 @media(max-width:1050px){.pendle-list dl{grid-template-columns:repeat(3,1fr)}.pendle-list dl>div:nth-child(4){border-left:0}.pendle-list dl>div{margin-top:8px}}
