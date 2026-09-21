@@ -1,3 +1,4 @@
+import { lookupWallet, isWalletAddress } from "./wallet-lookup.js";
 const state = { page: 1, totalPages: 1, totalPoints: 0, walletCount: 0, socialWallet: null, socialTheme: "dark", socialFormat: "standard", socialAnonymous: false };
 const $ = (id) => document.getElementById(id);
 const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 2 });
@@ -9,8 +10,8 @@ const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (character) => (
   "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
 })[character]);
 
-async function request(url) {
-  const response = await fetch(url);
+async function request(url, options) {
+  const response = await fetch(url, options);
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || "Unable to load data");
   return data;
@@ -26,9 +27,6 @@ function normalizeWalletQuery(value) {
   return query.replace(/^ref\s*=\s*/i, "").trim();
 }
 
-function isWalletAddress(value) {
-  return /^0x[a-f0-9]{40}$/i.test(value) || /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
-}
 
 function topSourceEntry(row) {
   return [
@@ -79,7 +77,7 @@ function renderReferredWallets(downline, officialCount) {
     return `<li><div><b title="${escapeHtml(address)}">${escapeHtml(name)}</b><button type="button" class="copy-referral-wallet" data-address="${escapeHtml(address)}">${escapeHtml(address)}</button></div><span class="network-pill">${escapeHtml(network)}</span><strong>${fmt(wallet.total_points || 0)} <small>OFFICIAL xPOINTS</small></strong></li>`;
   }).join("");
   const heading = `<h3>REFERRED WALLETS <span>${fmt(wallets.length)} VERIFIED OF ${fmt(officialCount || 0)} OFFICIAL REFERRALS</span></h3>`;
-  return `<section class="referred-wallets">${heading}${rows ? `<ol>${rows}</ol>` : `<p>No discovered referral wallets could be verified through the official API.</p>`}</section>`;
+  return `<section class="referred-wallets">${heading}${rows ? `<ol>${rows}</ol>` : `<p>${downline === null ? 'Referral details are unavailable; official points are shown above.' : 'No discovered referral wallets could be verified through the official API.'}</p>`}</section>`;
 }
 
 function renderPendleAnalytics(data) {
@@ -298,22 +296,7 @@ $("wallet-search").addEventListener("submit", async (event) => {
   result.classList.remove("not-found");
   result.innerHTML = `<span class="search-loading">${referralLookup ? "Resolving referral code" : "Looking up wallet"}…</span>`;
   try {
-    const data = await request(`/api/leaderboard?page=1&search=${encodeURIComponent(query)}`);
-    const exact = data.rows.find((wallet) => String(wallet.address).toLowerCase() === query.toLowerCase() || String(wallet.resolvedName || "").toLowerCase() === query.toLowerCase());
-    const indexedWallet = exact || data.rows[0] || (!referralLookup ? {
-      address: query,
-      addressDisplay: query,
-      walletType: query.startsWith("0x") ? "Evm" : "Svm",
-      rank: null,
-      resolvedName: null,
-      label: null
-    } : null);
-    if (!indexedWallet) throw new Error("Wallet not found");
-    const [details, official] = await Promise.all([
-      request(`/api/wallet?address=${encodeURIComponent(indexedWallet.address)}`),
-      request(`/api/official-wallet?address=${encodeURIComponent(indexedWallet.address)}`)
-    ]);
-    const wallet = { ...indexedWallet, ...official, sources: official.sources || [] };
+    const { wallet, details } = await lookupWallet(query, request);
     const network = wallet.walletType === "Svm" ? "SOL" : wallet.walletType === "Evm" ? "EVM" : wallet.walletType || "—";
     const displayName = wallet.resolvedName || wallet.label || wallet.address;
     const identityLabel = referralLookup ? `REFERRAL ${escapeHtml(query.toUpperCase())} → WALLET` : "WALLET";
@@ -342,7 +325,7 @@ $("wallet-search").addEventListener("submit", async (event) => {
     }));
   } catch (error) {
     result.classList.add("not-found");
-    result.innerHTML = `<span>${referralLookup ? "No wallet found for that referral code." : escapeHtml(error.message)}</span>`;
+    result.innerHTML = `<span>${escapeHtml(error.message)}</span>`;
   } finally { submit.disabled = false; }
 });
 
