@@ -45,11 +45,33 @@ export async function getVerifiedDownline(address) {
   };
 }
 
+export async function getCommunityWallet(address) {
+  const wallet = await getXPointsJson(`/api/wallet/${encodeURIComponent(address)}`);
+  const rank = Number(wallet.rank);
+  return {
+    address: wallet.address_display || wallet.address || address,
+    addressDisplay: wallet.address_display || wallet.address || address,
+    walletType: wallet.wallet_type || (address.startsWith("0x") ? "Evm" : "Svm"),
+    rank: Number.isFinite(rank) && rank > 0 ? rank : null,
+    referralCode: wallet.referral_code || null,
+    entityType: wallet.entity_type || null,
+    label: wallet.label || null,
+    resolvedName: wallet.resolved_name || null,
+    isContract: Boolean(wallet.is_contract),
+    xpointsIndexed: wallet.status === "registered"
+  };
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
   const address = normalizeWalletAddress(req.query.address);
   if (!address) return res.status(400).json({ error: "Invalid wallet address" });
   try {
+    if (req.query.rankOnly === "1") {
+      const wallet = await getCommunityWallet(address);
+      setCache(res, 120);
+      return res.status(200).json({ wallet });
+    }
     const downline = await getVerifiedDownline(address);
     setCache(res);
     return res.status(200).json({ downline });

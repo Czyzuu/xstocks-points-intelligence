@@ -14,12 +14,18 @@ test('empty community search and missing referral details do not block new walle
  assert.equal(result.wallet.address,address);assert.equal(result.wallet.totalPoints,123);
 });
 test('indexed wallet keeps rank while official API supplies points',async()=>{
- const result=await lookupWallet(address,async path=>path.startsWith('/api/official-wallet')?official:path.startsWith('/api/leaderboard')?{rows:[{address,rank:12,totalPoints:1}]}:{downline:{top:[]}});
+ const result=await lookupWallet(address,async path=>path.startsWith('/api/official-wallet')?official:path.includes('rankOnly=1')?{wallet:{address,rank:12}}:{downline:{top:[]}});
  assert.equal(result.wallet.rank,12);assert.equal(result.wallet.totalPoints,123);
+});
+test('direct xpoints wallet rank is used without a leaderboard search',async()=>{
+ const calls=[];
+ const result=await lookupWallet(address,async path=>{calls.push(path);if(path.startsWith('/api/official-wallet'))return official;if(path.includes('rankOnly=1'))return {wallet:{address,rank:321}};return {downline:null}});
+ assert.equal(result.wallet.rank,321);
+ assert.equal(calls.some(path=>path.startsWith('/api/leaderboard')),false);
 });
 test('never substitutes a fuzzy match or case-different Solana address',async()=>{
  const svm='HtJRbtFQPMitxmj4F7m4kSRo4nRFvb3KJZAopw7CXdzQ';
- const result=await lookupWallet(svm,async path=>path.startsWith('/api/official-wallet')?official:path.startsWith('/api/leaderboard')?{rows:[{address:svm.toLowerCase(),rank:1}]}:{downline:{top:[]}});
+ const result=await lookupWallet(svm,async path=>path.startsWith('/api/official-wallet')?official:path.includes('rankOnly=1')?{wallet:{address:svm.toLowerCase(),rank:1}}:{downline:{top:[]}});
  assert.equal(result.wallet.address,svm);assert.equal(result.wallet.rank,null);
 });
 test('official failure is not replaced with stale community points',async()=>{

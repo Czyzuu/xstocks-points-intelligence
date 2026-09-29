@@ -16,10 +16,10 @@ export async function lookupWallet(query, request) {
   }
   const [official, community, details] = await Promise.all([
     request(`/api/official-wallet?address=${encodeURIComponent(address)}`, { signal: AbortSignal.timeout(20000) }),
-    indexed ? null : optional(search),
+    indexed ? null : request(`/api/wallet?address=${encodeURIComponent(address)}&rankOnly=1`, { signal: AbortSignal.timeout(10000) }).catch(() => null),
     optional(`/api/wallet?address=${encodeURIComponent(address)}`)
   ]);
-  indexed ||= community?.rows?.find(row => sameAddress(row.address, address));
+  if (!indexed && sameAddress(community?.wallet?.address, address)) indexed = community.wallet;
   const wallet = {
     ...indexed,
     address,

@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { getPendleAnalytics } from "./api/pendle.js";
 import { getExponentAnalytics } from "./api/exponent.js";
 import { getOfficialWallet } from "./api/official-wallet.js";
-import { getVerifiedDownline } from "./api/wallet.js";
+import { getCommunityWallet, getVerifiedDownline } from "./api/wallet.js";
 
 const PORT = Number(process.env.PORT || 4173);
 const UPSTREAM = "https://xpoints.io";
@@ -75,6 +75,7 @@ const server = http.createServer(async (req, res) => {
       const isEvm = /^0x[a-f0-9]{40}$/i.test(address);
       const isSvm = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
       if (!isEvm && !isSvm) return json(res, 400, { error: "Invalid wallet address" });
+      if (url.searchParams.get("rankOnly") === "1") return json(res, 200, { wallet: await getCommunityWallet(address) });
       return json(res, 200, { downline: await getVerifiedDownline(address) });
     }
     if (url.pathname === "/api/pendle") {
