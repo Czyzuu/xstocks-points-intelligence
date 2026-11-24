@@ -331,6 +331,8 @@ footer>span:last-child{order:2}
 .pendle-list dd small,.pendle-list dl>div>small{color:var(--muted);font:400 8px "Geist Mono",monospace}
 .pendle-list .positive{color:var(--green)}.pendle-list .negative{color:var(--orange)}
 .pendle-note{margin:14px 0 0!important;font:400 9px/1.5 "Geist Mono",monospace}
+.pendle-claims small{display:block;line-height:1.6;overflow-wrap:anywhere}
+.pendle-share-button:disabled{cursor:not-allowed;opacity:.5}
 .exponent-analytics{background:linear-gradient(135deg,#191d20,#202519);border-top-color:#b8f34a!important}
 .exponent-analytics>h3{color:#d8ff82}.exponent-analytics .pendle-list article{border-color:#424b32}
 .yt-card-head{display:flex;align-items:center;justify-content:space-between}

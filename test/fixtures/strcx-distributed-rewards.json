@@ -1,0 +1,1180 @@
+{
+  "wallet": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac",
+  "capturedAt": "2026-11-24",
+  "gains": {
+    "total": 2,
+    "positions": [
+      {
+        "market": "0x84183d35960914bad14fa272372861664df329e2",
+        "chainId": 1,
+        "pnl": {
+          "netGain": {
+            "usd": 32.940205266603954,
+            "asset": 0.3532168434426378,
+            "eth": 0.015119688437272606
+          },
+          "totalSpent": {
+            "usd": 67.02698497062788,
+            "asset": 0.7546950552532196,
+            "eth": 0.03500968867067127
+          },
+          "preSeasonUnclaimedRewards": [],
+          "peakTvlUsd": 67.02698497062788,
+          "maxCapital": {
+            "usd": 67.02698497062788,
+            "asset": 0.7546950552532196,
+            "eth": 0.03500968867067127
+          },
+          "tradingVolume": 67.02698497062786
+        },
+        "ptBalance": 0,
+        "ytBalance": 39.79182706253449,
+        "lpBalance": 0,
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 39.79182706253449,
+          "spent_v2": {
+            "usd": 67.02698497062788,
+            "asset": 0.7546950552532196,
+            "eth": 0.03500968867067127
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        }
+      },
+      {
+        "market": "0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+        "chainId": 1,
+        "pnl": {
+          "netGain": {
+            "usd": 93.09562106756167,
+            "asset": 0.9415541517521591,
+            "eth": 0.0389686820832154
+          },
+          "totalSpent": {
+            "usd": 201.42177664956318,
+            "asset": 2.0624494483088402,
+            "eth": 0.07815265819281385
+          },
+          "preSeasonUnclaimedRewards": [],
+          "peakTvlUsd": 201.42177664956318,
+          "maxCapital": {
+            "usd": 201.42177664956318,
+            "asset": 2.0624494483088402,
+            "eth": 0.07815265819281385
+          },
+          "tradingVolume": 201.42177664956043
+        },
+        "ptBalance": 0,
+        "ytBalance": 46.5288330005034,
+        "lpBalance": 0,
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 46.5288330005034,
+          "spent_v2": {
+            "usd": 201.42177664956318,
+            "asset": 2.0624494483088402,
+            "eth": 0.07815265819281385
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        }
+      }
+    ]
+  },
+  "live": {
+    "positions": [
+      {
+        "chainId": 1,
+        "totalOpen": 1,
+        "totalClosed": 1,
+        "totalSy": 1,
+        "openPositions": [
+          {
+            "marketId": "1-0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+            "pt": {
+              "valuation": 0,
+              "balance": "0"
+            },
+            "yt": {
+              "valuation": 2.4965667816020867,
+              "balance": "46528833000503394496"
+            },
+            "lp": {
+              "valuation": 0,
+              "balance": "0",
+              "activeBalance": "0"
+            },
+            "crossPtPositions": []
+          }
+        ],
+        "closedPositions": [
+          {
+            "marketId": "1-0x84183d35960914bad14fa272372861664df329e2",
+            "pt": {
+              "valuation": 0,
+              "balance": "0"
+            },
+            "yt": {
+              "valuation": 0,
+              "balance": "39791827062534487281"
+            },
+            "lp": {
+              "valuation": 0,
+              "balance": "0",
+              "activeBalance": "0"
+            },
+            "crossPtPositions": []
+          }
+        ],
+        "syPositions": [
+          {
+            "syId": "1-0x1c44f9be658bde68e7b4091e9bd349fc64724450",
+            "balance": "621965565889720"
+          }
+        ],
+        "updatedAt": "2026-11-24T13:34:35.000Z"
+      }
+    ]
+  },
+  "history": {
+    "total": 9,
+    "results": [
+      {
+        "chainId": 1,
+        "market": "0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-10-03T19:07:59.000Z",
+        "action": "transferYtIn",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 46.5288330005034,
+          "spent_v2": {
+            "usd": 201.42177664956318,
+            "asset": 2.0624494483088402,
+            "eth": 0.07815265819281385
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9719040786759111,
+          "yt": 0.02809592132408889,
+          "lp": 1.9933237612551464
+        },
+        "profit": {
+          "usd": 0,
+          "asset": 0,
+          "eth": 0
+        },
+        "txValueAsset": 2.7825e-14,
+        "assetUsd": 99.43,
+        "assetEth": 0.037055057240942074,
+        "ptExchangeRate": 1.0288870730734607,
+        "ptExchangeRateAfter": 1.028908121635178,
+        "txHash": "0xadf8b732c3a55768eca04fb0a602fdf3a5c29ed619b21ff4e095926f7bdf1603"
+      },
+      {
+        "chainId": 1,
+        "market": "0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-10-03T19:07:59.000Z",
+        "action": "buyYt",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 46.5288330005024,
+          "spent_v2": {
+            "usd": 201.42177664956043,
+            "asset": 2.0624494483088127,
+            "eth": 0.07815265819281282
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9719040786759111,
+          "yt": 0.02809592132408889,
+          "lp": 1.9933237612551464
+        },
+        "profit": {
+          "usd": 0,
+          "asset": 0,
+          "eth": 0
+        },
+        "txValueAsset": 0.1681906330444694,
+        "assetUsd": 99.43,
+        "assetEth": 0.037055057240942074,
+        "ptExchangeRate": 1.0288870730734607,
+        "effectivePtExchangeRate": 1.0294579735811769,
+        "ptExchangeRateAfter": 1.028908121635178,
+        "txHash": "0xadf8b732c3a55768eca04fb0a602fdf3a5c29ed619b21ff4e095926f7bdf1603"
+      },
+      {
+        "chainId": 1,
+        "market": "0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-09-22T17:14:47.000Z",
+        "action": "buyYtLimitOrder",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 40.651131067198634,
+          "spent_v2": {
+            "usd": 184.69858200594882,
+            "asset": 1.8942588152643431,
+            "eth": 0.07192034465795973
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9698047772895634,
+          "yt": 0.03019522271043662,
+          "lp": 1.9908267734393459
+        },
+        "profit": {
+          "usd": 0,
+          "asset": 0,
+          "eth": 0
+        },
+        "txValueAsset": 0.34425881526434216,
+        "assetUsd": 98.92,
+        "assetEth": 0.036028109220308496,
+        "ptExchangeRate": 1.0334923318552451,
+        "effectivePtExchangeRate": 1.0338394230494439,
+        "ptExchangeRateAfter": 1.0311353618970893,
+        "txHash": "0x7d11f25fa939d66f39130e025a42c9d3e2752ac3c3ebc07b5b38ab6c775ad03f"
+      },
+      {
+        "chainId": 1,
+        "market": "0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-08-27T09:00:47.000Z",
+        "action": "buyYtLimitOrder",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 30.13356596472796,
+          "spent_v2": {
+            "usd": 150.6445000000001,
+            "asset": 1.5500000000000012,
+            "eth": 0.059517350461562
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9486290379234434,
+          "yt": 0.05137096207655656,
+          "lp": 1.9598228238669206
+        },
+        "profit": {
+          "usd": 0,
+          "asset": 0,
+          "eth": 0
+        },
+        "txValueAsset": 1.5500000000000012,
+        "assetUsd": 97.19,
+        "assetEth": 0.038398290620362555,
+        "ptExchangeRate": 1.0545900310929186,
+        "effectivePtExchangeRate": 1.0542269639104056,
+        "ptExchangeRateAfter": 1.054152845867978,
+        "txHash": "0x2036b57ab336f9a0b51763d76081d2c683f51f355a51e54a520a9c80e745c697"
+      },
+      {
+        "chainId": 1,
+        "market": "0x84183d35960914bad14fa272372861664df329e2",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-08-24T08:53:35.000Z",
+        "action": "redeemYtYield",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 39.79182706253449,
+          "spent_v2": {
+            "usd": 67.02698497062788,
+            "asset": 0.7546950552532196,
+            "eth": 0.03500968867067127
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9988364173484582,
+          "yt": 0.0011635826515418168,
+          "lp": 2.1862820614385923
+        },
+        "profit": {
+          "usd": 18.980061649819284,
+          "asset": 0.19735948476468007,
+          "eth": 0.007733012108862074
+        },
+        "txValueAsset": 0.19735948476468007,
+        "assetUsd": 96.17,
+        "assetEth": 0.039182368752545466,
+        "ptExchangeRate": 1.001164999721682,
+        "ptExchangeRateAfter": 1.0011649381533672,
+        "txHash": "0x75ca0fc6faf088d7d0d26968f59d314d80b5b10f5861466cf91c3a2258ef5e91"
+      },
+      {
+        "chainId": 1,
+        "market": "0x84183d35960914bad14fa272372861664df329e2",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-08-04T22:45:59.000Z",
+        "action": "buyYt",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 39.79182706253449,
+          "spent_v2": {
+            "usd": 67.02698497062788,
+            "asset": 0.7546950552532196,
+            "eth": 0.03500968867067127
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9867405354037277,
+          "yt": 0.013259464596272252,
+          "lp": 2.1606860734644404
+        },
+        "profit": {
+          "usd": 0,
+          "asset": 0,
+          "eth": 0
+        },
+        "txValueAsset": 0.15585735867795772,
+        "assetUsd": 92.5531,
+        "assetEth": 0.04940831808182219,
+        "ptExchangeRate": 1.0134377257169112,
+        "effectivePtExchangeRate": 1.0151772225248274,
+        "ptExchangeRateAfter": 1.0134376405149375,
+        "txHash": "0xe18bd877093a3f47807fa975a2ed7f81b1b3e25dd75854bc987cf49145450e3b"
+      },
+      {
+        "chainId": 1,
+        "market": "0x84183d35960914bad14fa272372861664df329e2",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-07-31T07:12:59.000Z",
+        "action": "redeemYtYield",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 29.36680758127451,
+          "spent_v2": {
+            "usd": 52.601903267171,
+            "asset": 0.5988376965752618,
+            "eth": 0.027309038717718087
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9839862456558844,
+          "yt": 0.01601375434411556,
+          "lp": 2.154802358355969
+        },
+        "profit": {
+          "usd": 13.960143616784674,
+          "asset": 0.15585735867795772,
+          "eth": 0.007386676328410531
+        },
+        "txValueAsset": 0.15585735867795772,
+        "assetUsd": 89.57,
+        "assetEth": 0.047393824655230725,
+        "ptExchangeRate": 1.0162744534204582,
+        "ptExchangeRateAfter": 1.0162743680766,
+        "txHash": "0x030e77f004ebecf76326d858a31dac773e617170e82f5de2c7397fd73e572ba7"
+      },
+      {
+        "chainId": 1,
+        "market": "0x84183d35960914bad14fa272372861664df329e2",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-07-15T20:41:11.000Z",
+        "action": "transferYtIn",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 29.36680758127451,
+          "spent_v2": {
+            "usd": 52.601903267171,
+            "asset": 0.5988376965752618,
+            "eth": 0.027309038717718087
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9800266343948896,
+          "yt": 0.019973365605110427,
+          "lp": 2.146006774688544
+        },
+        "profit": {
+          "usd": 0,
+          "asset": 0,
+          "eth": 0
+        },
+        "txValueAsset": 1.74e-16,
+        "assetUsd": 87.84,
+        "assetEth": 0.0456034061881839,
+        "ptExchangeRate": 1.0203797459977604,
+        "ptExchangeRateAfter": 1.0203804314129103,
+        "txHash": "0x29c008e1389953c54a9fb5f62d46e93238d9d0e07f3cbe4c395fe8b759315cea"
+      },
+      {
+        "chainId": 1,
+        "market": "0x84183d35960914bad14fa272372861664df329e2",
+        "user": "0xe4c751436c25cec98bdff2c3dc253a5687e669ac",
+        "timestamp": "2026-07-15T20:41:11.000Z",
+        "action": "buyYt",
+        "ptData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "ytData": {
+          "unit": 29.366807581274504,
+          "spent_v2": {
+            "usd": 52.60190326717098,
+            "asset": 0.5988376965752616,
+            "eth": 0.027309038717718077
+          }
+        },
+        "lpData": {
+          "unit": 0,
+          "spent_v2": {
+            "usd": 0,
+            "asset": 0,
+            "eth": 0
+          }
+        },
+        "priceInAsset": {
+          "pt": 0.9800266343948896,
+          "yt": 0.019973365605110427,
+          "lp": 2.146006774688544
+        },
+        "profit": {
+          "usd": 0,
+          "asset": 0,
+          "eth": 0
+        },
+        "txValueAsset": 0.5988376965752616,
+        "assetUsd": 87.84,
+        "assetEth": 0.0456034061881839,
+        "ptExchangeRate": 1.0203797459977604,
+        "effectivePtExchangeRate": 1.020816126371634,
+        "ptExchangeRateAfter": 1.0203804314129103,
+        "txHash": "0x29c008e1389953c54a9fb5f62d46e93238d9d0e07f3cbe4c395fe8b759315cea"
+      }
+    ]
+  },
+  "markets": {
+    "total": 1,
+    "limit": 100,
+    "skip": 0,
+    "results": [
+      {
+        "name": "STRCx",
+        "protocol": "xStocks",
+        "icon": "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/f83b5f2c-0b71-4e28-a132-79eac466c7d1.svg",
+        "address": "0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+        "expiry": "2026-11-26T00:00:00.000Z",
+        "pt": "1-0x599ef448e1d3378ed2dd7982d4b00615d9e5bf77",
+        "yt": "1-0x2875133b91909eb332fcf1e8664d0965a5fc5ca9",
+        "sy": "1-0x3aaaf43a1f8d327fdf24dc93654eb17e319883c5",
+        "underlyingAsset": "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+        "accountingAsset": "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+        "rewardTokens": [
+          "1-0x808507121b80c02388fad14726482e061b8da827"
+        ],
+        "inputTokens": [
+          "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3"
+        ],
+        "outputTokens": [
+          "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3"
+        ],
+        "details": {
+          "liquidity": 432136.5475282911,
+          "totalTvl": 55201150.30015647,
+          "tradingVolume": 302760.3499640102,
+          "underlyingApy": 0.13926079119275747,
+          "swapFeeApy": 0.004728290100592947,
+          "pendleApy": 0.016031207703265576,
+          "ytFloatingApy": -0.9999999999997344,
+          "impliedApy": 0.1489390260808765,
+          "feeRate": 0.005105339335605752,
+          "yieldRange": {
+            "min": 0.1,
+            "max": 0.44999999999999996
+          },
+          "aggregatedApy": 0.16180480970093467,
+          "maxBoostedApy": 0.18585162125583304,
+          "totalPt": 810.6039413289436,
+          "totalSy": 3583.7021459482057,
+          "totalSupply": 2183.2880865663456,
+          "totalActiveSupply": 2183.2880865663456,
+          "ytRoi": -0.10741112550582577,
+          "ptRoi": 0.0005449644479218474
+        },
+        "isNew": false,
+        "isPrime": false,
+        "timestamp": "2026-08-24T08:28:23.000Z",
+        "categoryIds": [
+          "strc",
+          "rwa",
+          "points",
+          "stocks"
+        ],
+        "isVolatile": false,
+        "marketType": "discrete_yield",
+        "underlyingRewardApyBreakdown": [],
+        "lpRewardApyBreakdown": [],
+        "ytApyBreakdown": {
+          "categories": [
+            {
+              "label": "Protocol Yield",
+              "apy": 0.13926079119275747,
+              "items": [
+                {
+                  "id": "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+                  "apy": 0.13926079119275747,
+                  "tags": [
+                    "INTEREST",
+                    "AUTO"
+                  ],
+                  "source": "CONTRACT"
+                }
+              ]
+            }
+          ]
+        },
+        "lpApyBreakdown": {
+          "categories": [
+            {
+              "label": "Underlying Yield",
+              "apy": 0.1135832082042936,
+              "items": [
+                {
+                  "id": "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+                  "apy": 0.1135832082042936,
+                  "tags": [
+                    "INTEREST",
+                    "AUTO"
+                  ],
+                  "source": "CONTRACT"
+                }
+              ]
+            },
+            {
+              "label": "PT Fixed Yield",
+              "apy": 0.027462103077665025,
+              "items": [
+                {
+                  "id": "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+                  "apy": 0.027462103077665025,
+                  "tags": [
+                    "FIXED_YIELD",
+                    "AUTO"
+                  ]
+                }
+              ]
+            },
+            {
+              "label": "LP Rewards",
+              "apy": 0.020759497803858523,
+              "items": [
+                {
+                  "id": "1-0x8ce3a13852d13e0e991c677a8c6137584e2b7635",
+                  "apy": 0.004728290100592947,
+                  "tags": [
+                    "SWAP_FEE",
+                    "AUTO"
+                  ]
+                },
+                {
+                  "id": "PENDLE",
+                  "apy": 0.016031207703265576,
+                  "tags": [
+                    "INCENTIVE",
+                    "BOOSTABLE"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "chainId": 1,
+        "points": [
+          {
+            "key": "xStocks",
+            "type": "multiplier",
+            "pendleAsset": "basic",
+            "value": 2,
+            "perDollarLp": false
+          },
+          {
+            "key": "xStocks",
+            "type": "multiplier",
+            "pendleAsset": "lp",
+            "value": 1,
+            "perDollarLp": false
+          }
+        ],
+        "limitOrderIncentive": {
+          "amountPerSec": 6.317092319008617e-06,
+          "impliedApy": 0.1489390260808765,
+          "buyYtApr": 0.14074821036543791,
+          "sellPtApr": 7.705395473503789e-05,
+          "sellYtApr": 0.9999999999999999,
+          "buyPtApr": 0.9999999999999999,
+          "long": {
+            "mode": "RELATIVE",
+            "amountPerSec": 3.804074250468637e-06,
+            "minApy": 0.1449390260808765,
+            "maxApy": 0.1529390260808765
+          },
+          "short": {
+            "mode": "RELATIVE",
+            "amountPerSec": 2.5130180685399795e-06,
+            "minApy": 0.1449390260808765,
+            "maxApy": 0.1529390260808765
+          }
+        },
+        "pendleEmission": {
+          "totalIncentive": 108.73039751161042,
+          "tvlIncentive": 13.32155246992798,
+          "feeIncentive": 91.58826760714602,
+          "discretionaryIncentive": 0,
+          "cobribingIncentive": 0,
+          "limitOrderIncentive": 3.8205774345364114
+        },
+        "marketInfo": {
+          "assetDescription": "<ul><li><strong>STRCx</strong> tracks STRC, perpetual preferred stock of Strategy, the largest institutional holder of bitcoin. STRC pays a cash dividend.</li><li>Backed Assets, the issuer of xStocks share tokens, holds the STRC shares.</li><li>Strategy's board declares each dividend and sets its rate. If the issuer defaults, the Security Agent can sell the collateral and pay holders the net proceeds after fees and costs. Holders can lose money if the proceeds fall short.</li></ul>",
+          "conversionRate": {
+            "rate": 1,
+            "fromUnit": "STRCx",
+            "toUnit": "STRCx on xStocks"
+          },
+          "utilizedProtocols": [
+            {
+              "id": "xstocks",
+              "url": "https://xstocks.fi/",
+              "name": "xStocks",
+              "imageUrl": "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/d7c98fd5-dd0c-483c-8d86-5a415965b8e8.svg"
+            }
+          ],
+          "deposit": {
+            "url": "https://app.backed.fi/issue?token=STRCx&network=Ethereum",
+            "description": "Issuer mint: 24/5 \u00b7 Min $5,000 \u00b7 KYC only"
+          },
+          "withdrawal": {
+            "url": "https://app.backed.fi/redeem?token=STRCx&network=Ethereum",
+            "description": "Issuer redeem: 24/5 \u00b7 Min $5,000 \u00b7 KYC only"
+          }
+        }
+      }
+    ]
+  },
+  "rewards": {
+    "rewards": [
+      {
+        "token": "0x808507121b80c02388fad14726482e061b8da827",
+        "total": {
+          "claimable": "0",
+          "unrealized": "0",
+          "claimed": "645437420257477"
+        },
+        "claimable": [],
+        "unrealized": [],
+        "chainId": 1,
+        "assetId": "1-0x8ce3a13852d13e0e991c677a8c6137584e2b7635"
+      },
+      {
+        "token": "0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+        "cadence": "daily",
+        "nextDistributionAt": "2026-11-28T01:30:11.000Z",
+        "total": {
+          "claimable": "0",
+          "unrealized": "0",
+          "claimed": "941541086108696148"
+        },
+        "claimable": [],
+        "unrealized": [],
+        "chainId": 1,
+        "assetId": "1-0x8ce3a13852d13e0e991c677a8c6137584e2b7635"
+      }
+    ]
+  },
+  "prices": {
+    "prices": {
+      "1-0x808507121b80c02388fad14726482e061b8da827": 1.25009952,
+      "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3": 97.92
+    },
+    "total": 2,
+    "skip": 0
+  },
+  "assets": [
+    {
+      "id": "1-0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+      "chainId": 1,
+      "address": "0x1aad217b8f78dba5e6693460e8470f8b1a3977f3",
+      "symbol": "STRCx",
+      "decimals": 18,
+      "expiry": null,
+      "accentColor": "",
+      "price": {
+        "usd": 97.92
+      },
+      "priceUpdatedAt": "2026-11-24T19:29:45.009Z",
+      "name": "STRCx",
+      "baseType": "IB",
+      "types": [
+        "IB"
+      ],
+      "proSymbol": "STRCx",
+      "proIcon": "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/90842914-897b-4aec-9ada-c244dc5560c2.svg",
+      "zappable": true,
+      "simpleName": "STRCx",
+      "simpleSymbol": "STRCx",
+      "simpleIcon": "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/90842914-897b-4aec-9ada-c244dc5560c2.svg",
+      "proName": "STRCx"
+    },
+    {
+      "chainId": 1,
+      "address": "0x808507121B80c02388fAd14726482e061B8da827",
+      "symbol": "PENDLE",
+      "decimals": 18
+    }
+  ],
+  "verifiedStrcxPayouts": [
+    {
+      "txHash": "0x357f35d9037da930f49617d7a23bc68d5c2f67a042b9148dc1810b4f5d46c85b",
+      "amount": "46072680563088529"
+    },
+    {
+      "txHash": "0xae3087695fc3cce46fe41b4c43f7f77bf178e67de638f33135f0262e9712a69c",
+      "amount": "435575333856662207"
+    },
+    {
+      "txHash": "0x33d99ddae0f102ffcc1d5ca829261093bf699de43aedf02be710370cf54ec5af",
+      "amount": "168190633044469403"
+    },
+    {
+      "txHash": "0xda1830dd7210d8006515f7e4aa7728828807224362cc20061b6cd5a0be260651",
+      "amount": "291702438644476009"
+    }
+  ],
+  "fundingTransfers": {
+    "complete": true,
+    "items": [
+      {
+        "block_number": 26465712,
+        "log_index": 250,
+        "timestamp": "2026-11-21T19:56:59.000000Z",
+        "transaction_hash": "0x357f35d9037da930f49617d7a23bc68d5c2f67a042b9148dc1810b4f5d46c85b",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "46072680563088529"
+        },
+        "from": {
+          "hash": "0x33305665f69B4642D1275f4Ce81c23651674D21C"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 26445691,
+        "log_index": 463,
+        "timestamp": "2026-11-19T00:58:35.000000Z",
+        "transaction_hash": "0x542167d560f48f645571966eac9e288f49c67cd8189a414365467874f8db0f9d",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "435575333856662207"
+        },
+        "from": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "to": {
+          "hash": "0x0729E2a4716d9f7dD17858d5d504426D228697f7"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 26326095,
+        "log_index": 321,
+        "timestamp": "2026-11-02T09:07:35.000000Z",
+        "transaction_hash": "0xae3087695fc3cce46fe41b4c43f7f77bf178e67de638f33135f0262e9712a69c",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "435575333856662207"
+        },
+        "from": {
+          "hash": "0x33305665f69B4642D1275f4Ce81c23651674D21C"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 26113802,
+        "log_index": 515,
+        "timestamp": "2026-10-03T19:07:59.000000Z",
+        "transaction_hash": "0xadf8b732c3a55768eca04fb0a602fdf3a5c29ed619b21ff4e095926f7bdf1603",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "168190633044469403"
+        },
+        "from": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "to": {
+          "hash": "0x888888888889758F76e7103c6CbF23ABbF58F946"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 26113797,
+        "log_index": 385,
+        "timestamp": "2026-10-03T19:06:59.000000Z",
+        "transaction_hash": "0x33d99ddae0f102ffcc1d5ca829261093bf699de43aedf02be710370cf54ec5af",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "168190633044469403"
+        },
+        "from": {
+          "hash": "0x33305665f69B4642D1275f4Ce81c23651674D21C"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 26034450,
+        "log_index": 193,
+        "timestamp": "2026-09-22T17:14:47.000000Z",
+        "transaction_hash": "0x7d11f25fa939d66f39130e025a42c9d3e2752ac3c3ebc07b5b38ab6c775ad03f",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "344258815264342591"
+        },
+        "from": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "to": {
+          "hash": "0x000000000000c9B3E2C3Ec88B1B4c0cD853f4321"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 26010938,
+        "log_index": 460,
+        "timestamp": "2026-09-19T10:23:11.000000Z",
+        "transaction_hash": "0xda1830dd7210d8006515f7e4aa7728828807224362cc20061b6cd5a0be260651",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "291702438644476009"
+        },
+        "from": {
+          "hash": "0x33305665f69B4642D1275f4Ce81c23651674D21C"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 25896719,
+        "log_index": 304,
+        "timestamp": "2026-09-03T12:16:23.000000Z",
+        "transaction_hash": "0xe2b808adec81bdc2b1c96a74a04fcba1d880a5a5396e834048ad32107aeca881",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "100000000000000000"
+        },
+        "from": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "to": {
+          "hash": "0x888888888889758F76e7103c6CbF23ABbF58F946"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 25845523,
+        "log_index": 108,
+        "timestamp": "2026-08-27T09:00:47.000000Z",
+        "transaction_hash": "0x2036b57ab336f9a0b51763d76081d2c683f51f355a51e54a520a9c80e745c697",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "1550000000000000000"
+        },
+        "from": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "to": {
+          "hash": "0x000000000000c9B3E2C3Ec88B1B4c0cD853f4321"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 25845498,
+        "log_index": 1156,
+        "timestamp": "2026-08-27T08:55:47.000000Z",
+        "transaction_hash": "0xc46fd7130fd7562848215181e9f1b85a79d34fbfa8792c286befc7d2e15dfb7c",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "1005874681546016785"
+        },
+        "from": {
+          "hash": "0x888888888889758F76e7103c6CbF23ABbF58F946"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 25845399,
+        "log_index": 782,
+        "timestamp": "2026-08-27T08:35:47.000000Z",
+        "transaction_hash": "0x2b774584cddf6564441412aa7ea475b9d03b6d66e9c24f67fffdfedee3a7ea99",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "498279518432376511"
+        },
+        "from": {
+          "hash": "0x888888888889758F76e7103c6CbF23ABbF58F946"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 25823965,
+        "log_index": 521,
+        "timestamp": "2026-08-24T08:53:35.000000Z",
+        "transaction_hash": "0x75ca0fc6faf088d7d0d26968f59d314d80b5b10f5861466cf91c3a2258ef5e91",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "197359484764680092"
+        },
+        "from": {
+          "hash": "0x1c44f9bE658bdE68e7B4091e9bd349fC64724450"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 25684630,
+        "log_index": 832,
+        "timestamp": "2026-08-04T22:45:59.000000Z",
+        "transaction_hash": "0xe18bd877093a3f47807fa975a2ed7f81b1b3e25dd75854bc987cf49145450e3b",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "155857358677957730"
+        },
+        "from": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "to": {
+          "hash": "0x888888888889758F76e7103c6CbF23ABbF58F946"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      },
+      {
+        "block_number": 25651269,
+        "log_index": 223,
+        "timestamp": "2026-07-31T07:12:59.000000Z",
+        "transaction_hash": "0x030e77f004ebecf76326d858a31dac773e617170e82f5de2c7397fd73e572ba7",
+        "total": {
+          "decimals": "18",
+          "ui_multiplier": null,
+          "value": "155857358677957731"
+        },
+        "from": {
+          "hash": "0x1c44f9bE658bdE68e7B4091e9bd349fC64724450"
+        },
+        "to": {
+          "hash": "0xE4C751436c25Cec98BDFF2C3dC253a5687e669Ac"
+        },
+        "token": {
+          "address_hash": "0x1Aad217B8F78dbA5E6693460e8470F8b1A3977f3"
+        }
+      }
+    ]
+  }
+}

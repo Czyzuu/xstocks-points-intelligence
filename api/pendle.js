@@ -1,7 +1,9 @@
 import { getPendleJson, normalizeWalletAddress, sendError, setCache } from "./_lib/xpoints.js";
+import { assetId, loadRewardPricing, summarizeDistributedRewards, sumKnownValues } from "./_lib/pendle-rewards.js";
+import { getCapitalTransfers, traceYtCapital } from "./_lib/pendle-capital.js";
 
 const hasYtActivity = (position) => Number(position.ytData?.unit || 0) !== 0 || Number(position.ytData?.spent_v2?.usd || 0) !== 0;
-const YT_ACTIONS = new Set(["buyYt", "sellYt", "transferYtIn", "transferYtOut", "redeemYtYield"]);
+const YT_ACTIONS = new Set(["buyYt", "sellYt", "buyYtLimitOrder", "sellYtLimitOrder", "transferYtIn", "transferYtOut", "redeemYtYield"]);
 const positionKey = ({ chainId, market }) => `${chainId}-${String(market).toLowerCase()}`;
 
 export function collectCandidateMarketKeys(pnlPositions, livePositions, transactionsByMarket) {
@@ -53,7 +55,7 @@ export function summarizeYtHistory(transactions) {
   let exitProceedsUsd = 0;
   for (const transaction of ordered) {
     const units = Number(transaction.ytData?.unit || 0);
-    if (transaction.action === "sellYt") {
+    if (["sellYt", "sellYtLimitOrder"].includes(transaction.action)) {
       soldUnits += Math.max(0, previousUnits - units);
       const proceedsAsset = Number(transaction.txValueAsset || 0);
       exitProceedsAsset += proceedsAsset;
@@ -88,12 +90,21 @@ export function calculateYtTotalPnl({ aggregateNetGainUsd, isClosed, isMatured =
   return realizedPnl + Number(currentYtValueUsd || 0) + Number(unclaimedYieldUsd || 0) - Number(entryCostUsd || 0);
 }
 
-export async function getPendleAnalytics(address) {
-  const [pnl, live, transactionHistory] = await Promise.all([
-    getPendleJson(`/v1/pnl/gained/${encodeURIComponent(address)}/positions`),
-    getPendleJson(`/v1/dashboard/positions/database/${encodeURIComponent(address)}`),
-    getPendleJson(`/v1/pnl/transactions?user=${encodeURIComponent(address)}&limit=1000`)
+export async function getPendleAnalytics(address, getJson = getPendleJson, loadTransfers = getCapitalTransfers) {
+  const [pnl, live, transactionHistory, merkle] = await Promise.all([
+    getJson(`/v1/pnl/gained/${encodeURIComponent(address)}/positions`),
+    getJson(`/v1/dashboard/positions/database/${encodeURIComponent(address)}`),
+    getJson(`/v1/pnl/transactions?user=${encodeURIComponent(address)}&limit=1000`),
+    getJson(`/v2/dashboard/merkle-rewards/${encodeURIComponent(address)}`).catch(() => null)
   ]);
+  // The API caps both limit and skip at 1,000. Fetch the second page when
+  // needed and expose an incomplete history rather than silently truncating it.
+  if (transactionHistory.total > (transactionHistory.results || []).length && transactionHistory.results?.length === 1000) {
+    const next = await getJson(`/v1/pnl/transactions?user=${encodeURIComponent(address)}&limit=1000&skip=1000`);
+    transactionHistory.results.push(...(next.results || []));
+  }
+  const historyComplete = Number.isFinite(transactionHistory.total) && transactionHistory.total === (transactionHistory.results || []).length;
+  const rewardsAvailable = Array.isArray(merkle?.rewards);
   const aggregateByMarket = new Map((pnl.positions || []).map((position) => [positionKey(position), position]));
   const transactionsByMarket = new Map();
   for (const transaction of transactionHistory.results || []) {
@@ -107,7 +118,7 @@ export async function getPendleAnalytics(address) {
   if (!candidateKeys.size) return { positions: [] };
 
   const ids = [...candidateKeys].join(",");
-  const markets = await getPendleJson(`/v2/markets/all?ids=${encodeURIComponent(ids)}&limit=100`);
+  const markets = await getJson(`/v2/markets/all?ids=${encodeURIComponent(ids)}&limit=100`);
   const marketById = new Map((markets.results || []).map((market) => [`${market.chainId}-${market.address.toLowerCase()}`, market]));
   const xStocksKeys = [...candidateKeys].filter((key) => {
     const market = marketById.get(key);
@@ -121,12 +132,21 @@ export async function getPendleAnalytics(address) {
     return latest(b) - latest(a);
   }).slice(0, 10);
   if (!xStocksKeys.length) return { positions: [] };
-  const claimTokenIds = [...new Set(xStocksKeys.flatMap((key) => liveByMarket.get(key)?.yt?.claimTokenAmounts || []).map(({ token }) => token))];
-  const [claimAssets, claimPrices] = claimTokenIds.length ? await Promise.all([
-    getPendleJson(`/v1/assets/all?ids=${encodeURIComponent(claimTokenIds.join(","))}`),
-    getPendleJson(`/v1/prices/assets?ids=${encodeURIComponent(claimTokenIds.join(","))}`)
-  ]) : [{ assets: [] }, { prices: {} }];
-  const claimAssetById = new Map((claimAssets.assets || []).map((asset) => [`${asset.chainId}-${asset.address.toLowerCase()}`, asset]));
+  const rewardRows = (merkle?.rewards || []).filter((row) => xStocksKeys.includes(String(row.assetId || "").toLowerCase()));
+  const claimTokenIds = [...new Set([
+    ...xStocksKeys.flatMap((key) => (liveByMarket.get(key)?.yt?.claimTokenAmounts || []).map(({ token }) => assetId(marketById.get(key).chainId, token))),
+    ...rewardRows.map((row) => assetId(row.chainId, row.token))
+  ])];
+  const { assets: claimAssetById, prices: claimPrices } = await loadRewardPricing(claimTokenIds, getJson);
+  const fundingByMarket = new Map(await Promise.all(xStocksKeys.map(async (key) => {
+    const market = marketById.get(key);
+    const underlying = String(market.underlyingAsset || "").split("-")[1];
+    if (!rewardsAvailable || market.chainId !== 1 || !underlying || !rewardRows.some((row) => row.assetId?.toLowerCase() === key && row.token?.toLowerCase() === underlying.toLowerCase() && Number(row.total?.claimed) > 0)) return [key, null];
+    try {
+      const transfers = await loadTransfers({ address, token: underlying, chainId: market.chainId });
+      return [key, traceYtCapital({ address, market, history: transactionsByMarket.get(key) || [], rewards: rewardRows, transfers })];
+    } catch { return [key, null]; }
+  })));
 
   return { positions: xStocksKeys.map((key) => {
     const market = marketById.get(key);
@@ -134,6 +154,7 @@ export async function getPendleAnalytics(address) {
     const history = transactionsByMarket.get(key) || [];
     const historySummary = summarizeYtHistory(history);
     const capital = splitYtCapital(history);
+    const capitalFunding = fundingByMarket.get(key);
     const livePosition = liveByMarket.get(key);
     const aggregateBalance = Number(position?.ytData?.unit || 0);
     const balance = livePosition || aggregateBalance > 0 ? aggregateBalance || historySummary.balance : 0;
@@ -143,15 +164,27 @@ export async function getPendleAnalytics(address) {
     const entryCostUsd = isClosed ? historySummary.peakCostUsd : Number(aggregateCost.usd || historySummary.peakCostUsd);
     const entryCostAsset = isClosed ? historySummary.peakCostAsset : Number(aggregateCost.asset || historySummary.peakCostAsset);
     const unclaimedYield = (livePosition?.yt?.claimTokenAmounts || []).map(({ token, amount }) => {
-      const asset = claimAssetById.get(token.toLowerCase());
-      const decimals = Number(asset?.decimals ?? 18);
-      const units = Number(amount) / 10 ** decimals;
-      return { token, symbol: asset?.symbol || "SY", amount: units, usd: units * Number(claimPrices.prices?.[token] || 0) };
+      const id = assetId(market.chainId, token);
+      const asset = claimAssetById.get(id);
+      const units = Number(amount) === 0 ? 0 : Number.isInteger(asset?.decimals) ? Number(amount) / 10 ** asset.decimals : null;
+      const price = claimPrices[id];
+      return { token: id, symbol: asset?.symbol || "SY", amount: units, usd: units === 0 ? 0 : units != null && price != null ? units * Number(price) : null };
     });
-    const unclaimedYieldUsd = unclaimedYield.reduce((sum, item) => sum + item.usd, 0);
+    const distributedRewards = summarizeDistributedRewards(rewardRows, key, claimAssetById, claimPrices);
+    const distributedClaimedUsd = rewardsAvailable ? sumKnownValues(distributedRewards, "claimedUsd") : null;
+    const distributedClaimableUsd = rewardsAvailable ? sumKnownValues(distributedRewards, "claimableUsd") : null;
+    const directUnclaimedUsd = sumKnownValues(unclaimedYield, "usd");
+    const unclaimedYieldUsd = directUnclaimedUsd != null && distributedClaimableUsd != null ? directUnclaimedUsd + distributedClaimableUsd : null;
+    // The aggregate is market-wide. Do not label it as verified YT PnL for
+    // a mixed PT/LP/YT history, or substitute current reward prices for history.
+    const otherActivity = [position?.ptData, position?.lpData].some((data) => Number(data?.unit || 0) !== 0 || Number(data?.spent_v2?.usd || 0) !== 0) ||
+      (transactionHistory.results || []).some((tx) => positionKey(tx) === key && /^(buyPt|sellPt|transferPt|addLiquidity|removeLiquidity|transferLp)/.test(tx.action));
+    const aggregatePresent = position?.pnl?.netGain?.usd != null && Number.isFinite(Number(position.pnl.netGain.usd));
+    const pnlComplete = historyComplete && rewardsAvailable && unclaimedYieldUsd != null && !otherActivity &&
+      (aggregatePresent || distributedRewards.every((reward) => reward.claimed === 0));
     const currentYtValueUsd = Number(livePosition?.yt?.valuation || 0);
     const aggregateNetGainUsd = position?.pnl?.netGain?.usd;
-    const ytTotalPnlUsd = calculateYtTotalPnl({
+    const ytTotalPnlUsd = pnlComplete ? calculateYtTotalPnl({
       aggregateNetGainUsd,
       isClosed,
       isMatured: matured,
@@ -160,7 +193,7 @@ export async function getPendleAnalytics(address) {
       claimedYieldUsd: historySummary.claimedYieldUsd,
       unclaimedYieldUsd,
       entryCostUsd
-    });
+    }) : null;
     return {
       chainId: market.chainId,
       market: market.address,
@@ -173,14 +206,22 @@ export async function getPendleAnalytics(address) {
       entryCostUsd,
       entryCostAsset,
       peakCapitalUsd: historySummary.peakCostUsd,
-      baseBagAsset: capital.baseAsset,
-      baseBagUsd: capital.baseUsd,
-      reinvestedBagAsset: capital.reinvestedAsset,
-      reinvestedBagUsd: capital.reinvestedUsd,
+      baseBagAsset: capitalFunding?.otherCapitalAsset ?? capital.baseAsset,
+      baseBagUsd: capitalFunding?.otherCapitalUsd ?? capital.baseUsd,
+      reinvestedBagAsset: capitalFunding?.reinvestedAsset ?? capital.reinvestedAsset,
+      reinvestedBagUsd: capitalFunding?.reinvestedUsd ?? capital.reinvestedUsd,
+      capitalFunding,
       averageEntryAsset: (balance || historySummary.peakUnits) > 0 ? entryCostAsset / (balance || historySummary.peakUnits) : null,
       claimedYieldUsd: historySummary.claimedYieldUsd,
       claimedYieldAsset: historySummary.claimedYieldAsset,
       yieldClaims: historySummary.yieldClaims,
+      distributedRewards,
+      distributedClaimedUsd,
+      distributedClaimableUsd,
+      rewardsAvailable,
+      historyComplete,
+      pnlComplete,
+      pnlWarning: pnlComplete ? null : otherActivity ? "Market also contains PT or LP activity; YT-only PnL cannot be isolated." : "Reward pricing or position history is incomplete; total PnL is unavailable.",
       soldUnits: historySummary.soldUnits,
       exitProceedsAsset: historySummary.exitProceedsAsset,
       exitProceedsUsd: historySummary.exitProceedsUsd,
